@@ -13,11 +13,13 @@ FILE(GLOB pio_code_src *.pio)
 
 add_executable(${project_name})
 
+pico_generate_pio_header(${project_name} ${pio_code_src})
 target_sources(${project_name} PRIVATE ${c_code_src})
 
 # Add pico_stdlib library which aggregates commonly used features
 target_link_libraries(${project_name}
 	pico_stdlib
+	hardware_pio
 	)
 
 pico_enable_stdio_usb(${project_name} 1)

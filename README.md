@@ -2,6 +2,11 @@
 
 Using arcade switches and buttons to build a MIDI controller, interfaced over USB using a PRI Pico board. 
 
+To build : 
+```
+make bin
+```
+
 # Documentation 
 
 Pinout: https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf

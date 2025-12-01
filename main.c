@@ -9,7 +9,9 @@
 #define WS2812_FREQ 800000 
 #define OTHER_LED_PIN 0 
 
-#define INC 10
+#define INC 1
+#define DELAY 50 
+
 int main()
 {
     gpio_init(PICO_DEFAULT_LED_PIN);
@@ -36,13 +38,13 @@ int main()
 
 
         gpio_put(PICO_DEFAULT_LED_PIN,led );
-        sleep_ms(50);
+        sleep_ms(DELAY);
         enum dir_e joystick_pos = get_joystick_pos();
 
 		
         if (joystick_pos & UP) {
 			printf("hello");
-			u = u == 255 ? 255 : u+INC;
+			u = u == 20 ? u : u+INC;
 		}
         if (joystick_pos & DOWN) {
 			u = u == 0 ? 0 : u-INC;
@@ -55,15 +57,19 @@ int main()
 		}
 
 
-        printf("Joystick %i %d %d\n", joystick_pos, u, l);
-        //for (int i = 0; i < 15; i++)
-		//{
-		//	if (i & joystick_pos) {
-			put_pixel(pio,sm, rand());
-		put_pixel(pio, sm, urgb_u32(255, u, 255-u));
-		put_pixel(pio, sm, urgb_u32(255, l, 255-l));
-		//	}
+        printf("Joystick new %i %d %d\n", joystick_pos, u, l);
+        for (int i = 0; i < 20; i++)
+		{
+			if ( i < u ) put_pixel(pio, sm, rand());
+			else put_pixel(pio, sm, urgb_u32(255, l, 255-l));
+		}
 		//	else { put_pixel(pio, sm, 0); }
+
+		//	if (i & joystick_pos) {
+		//	put_pixel(pio,sm, rand());
+		//	puput_pixel(pio, sm, urgb_u32(255, u, 255-u));
+		//	puput_pixel(pio, sm, urgb_u32(255, l, 255-l));
+		//	pu//	}
 		//}
 		led = !led; 
     }

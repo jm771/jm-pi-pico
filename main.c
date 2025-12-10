@@ -32,20 +32,29 @@ int main()
     ws2812_program_init(pio, sm, offset, OTHER_LED_PIN, WS2812_FREQ);
     bool led = true;
 
+    int64_t nextTime = 0;
+
     while (true)
     {
+        int64_t currTime = get_absolute_time();
 
-        gpio_put(PICO_DEFAULT_LED_PIN, led);
-        sleep_ms(DELAY);
-
-        joystick_prog_produce_output(0, buffer, N_LEDS);
-
-        for (int i = 0; i < N_LEDS; i++)
+        if (currTime > nextTime)
         {
-            put_pixel(pio, sm, adjustBrightness(buffer[i], BRIGHNESS_SHIFT));
-        }
 
-        led = !led;
+            gpio_put(PICO_DEFAULT_LED_PIN, led);
+
+            joystick_prog_produce_output(0, buffer, N_LEDS);
+
+            // TODO - would be cooler to DMA this
+            for (int i = 0; i < N_LEDS; i++)
+            {
+                put_pixel(pio, sm, adjustBrightness(buffer[i], BRIGHNESS_SHIFT));
+            }
+
+            led = !led;
+
+            nextTime = currTime + 200 * 1000;
+        }
     }
 
     return 0;

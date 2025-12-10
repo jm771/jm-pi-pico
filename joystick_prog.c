@@ -23,11 +23,11 @@ void joystick_prog_produce_output(unsigned int frame, uint32_t *buffer, unsigned
     }
     if (joystick_pos & LEFT)
     {
-        l = l == 255 ? 255 : l + INC;
+        l = (l + INC) & 0xff;
     }
     if (joystick_pos & RIGHT)
     {
-        l = l == 0 ? 0 : l - INC;
+        l = (l - INC) & 0xff;
     }
 
     printf("Joystick new %i %d %d\n", joystick_pos, u, l);

@@ -10,7 +10,7 @@ void init_joystick()
 		gpio_set_dir(i, GPIO_IN);
 		gpio_pull_up(i);
 	}
-};
+}
 
 enum dir_e get_joystick_pos()
 {
@@ -20,4 +20,4 @@ enum dir_e get_joystick_pos()
 	ret |= (gpio_get(JOYSTOCK_PIN_LEFT) == false) ? LEFT : 0;
 	ret |= (gpio_get(JOYSTOCK_PIN_RIGHT) == false) ? RIGHT : 0;
 	return ret;
-};
+}

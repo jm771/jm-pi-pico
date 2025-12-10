@@ -16,7 +16,10 @@ add_executable(${project_name})
 pico_generate_pio_header(${project_name} ${pio_code_src})
 target_sources(${project_name} PRIVATE ${c_code_src})
 
-# Add pico_stdlib library which aggregates commonly used features
+# todo - want -pedantic
+target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror)
+
+# Add pico_stdlib library which aggregates commonly used featuresT
 target_link_libraries(${project_name}
 	pico_stdlib
 	hardware_pio

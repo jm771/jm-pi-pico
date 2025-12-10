@@ -6,6 +6,7 @@
 #include "ws2812.pio.h"
 #include "ws2812_utils.h"
 #include "joystick_prog.h"
+#include "spinning_rainbow.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -33,6 +34,7 @@ int main()
     bool led = true;
 
     int64_t nextTime = 0;
+    int32_t frame = 0;
 
     while (true)
     {
@@ -43,7 +45,10 @@ int main()
 
             gpio_put(PICO_DEFAULT_LED_PIN, led);
 
-            joystick_prog_produce_output(0, buffer, N_LEDS);
+            // joystick_prog_produce_output(frame, buffer, N_LEDS);
+            spinning_rainbow_produce_output(frame, buffer, N_LEDS);
+
+            frame++;
 
             // TODO - would be cooler to DMA this
             for (int i = 0; i < N_LEDS; i++)

@@ -7,6 +7,8 @@
 #include "ws2812_utils.h"
 #include "joystick_prog.h"
 #include "spinning_rainbow.h"
+#include "stars.h"
+#include "pixels.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -14,6 +16,7 @@
 #define DELAY 50
 #define N_LEDS 200
 #define BRIGHNESS_SHIFT 3
+#define N_PROGS 3
 
 int main()
 {
@@ -67,7 +70,18 @@ int main()
             gpio_put(PICO_DEFAULT_LED_PIN, led);
 
             // joystick_prog_produce_output(frame, buffer, N_LEDS);
-            spinning_rainbow_produce_output(incer, buffer, N_LEDS);
+            if (incer % N_PROGS == 0)
+            {
+                spinning_rainbow_produce_output(frame, buffer);
+            }
+            if (incer % N_PROGS == 1)
+            {
+                stars_produce_output(frame, buffer);
+            }
+            if (incer % N_PROGS == 2)
+            {
+                pixels_produce_output(frame, buffer);
+            }
 
             frame++;
 

@@ -1,17 +1,6 @@
 #include "hat_utils.h"
 #include "stdio.h"
 
-#define N_LEDS 200
-#define N_FULL_ROWS 7
-#define FULL_ROW_LEN 21
-#define ROW_7_LEN 16
-#define ROW_8_LEN 11
-#define ROW_9_LEN 6
-
-#define ROW_7_OFFSET (N_FULL_ROWS * FULL_ROW_LEN)
-#define ROW_8_OFFSET (ROW_7_OFFSET + ROW_7_LEN)
-#define ROW_9_OFFSET (ROW_8_OFFSET + ROW_8_LEN)
-
 #define INTERP(value, rowlen) (((value * rowlen) + (FULL_ROW_LEN >> 1)) / FULL_ROW_LEN)
 
 uint32_t get_pixel_offset_pixel_for_row(uint32_t row, uint32_t col)

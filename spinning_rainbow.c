@@ -2,9 +2,16 @@
 #include "hat_utils.h"
 #include "string.h"
 
-void spinning_rainbow_produce_output(unsigned int frame, uint32_t *buffer, unsigned int nLeds)
+void spinning_rainbow_produce_output(unsigned int frame, uint32_t *buffer)
 {
-    memset(buffer, 0, sizeof(uint32_t) * nLeds);
+    if (frame % 4 != 0)
+    {
+        return;
+    }
+
+    frame = frame / 4;
+
+    memset(buffer, 0, sizeof(uint32_t) * N_LEDS);
 
     uint32_t col = frame % ROW_WIDTH;
 

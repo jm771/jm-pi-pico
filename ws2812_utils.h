@@ -18,7 +18,10 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
 
 static inline uint32_t adjustBrightness(uint32_t val, size_t shift)
 {
-    return ((val & (0xff0000)) >> shift) | ((val & (0xff00)) >> shift) | ((val & (0xff)) >> shift);
+    uint32_t m1 = 0xff >> shift;
+    uint32_t mask = m1 << 16 | m1 << 8 | m1;
+
+    return val >> shift & mask;
 }
 
 void set_chain(PIO pio, uint8_t sm, uint32_t *colors, size_t l);

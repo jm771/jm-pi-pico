@@ -33,20 +33,41 @@ int main()
     ws2812_program_init(pio, sm, offset, OTHER_LED_PIN, WS2812_FREQ);
     bool led = true;
 
-    int64_t nextTime = 0;
+    int64_t nextFrameTime = 0;
     int32_t frame = 0;
+    uint32_t incer = 0;
+
+    int debouncing = 0;
 
     while (true)
     {
         int64_t currTime = get_absolute_time();
 
-        if (currTime > nextTime)
+        if (currTime > nextFrameTime)
         {
+            enum dir_e joystick_pos = get_joystick_pos();
+
+            if (joystick_pos & UP)
+            {
+                if (!debouncing)
+                    incer++;
+                debouncing = 1;
+            }
+            else if (joystick_pos & DOWN)
+            {
+                if (!debouncing)
+                    incer--;
+                debouncing = 1;
+            }
+            else
+            {
+                debouncing = 0;
+            }
 
             gpio_put(PICO_DEFAULT_LED_PIN, led);
 
             // joystick_prog_produce_output(frame, buffer, N_LEDS);
-            spinning_rainbow_produce_output(frame, buffer, N_LEDS);
+            spinning_rainbow_produce_output(incer, buffer, N_LEDS);
 
             frame++;
 
@@ -58,7 +79,7 @@ int main()
 
             led = !led;
 
-            nextTime = currTime + 200 * 1000;
+            nextFrameTime = currTime + 20 * 1000;
         }
     }
 

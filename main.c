@@ -93,7 +93,7 @@ int main()
 
             led = !led;
 
-            nextFrameTime = currTime + 20 * 1000;
+            nextFrameTime = currTime + 500 * 1000;
         }
     }
 

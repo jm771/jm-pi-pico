@@ -7,6 +7,7 @@
 #include "ws2812_utils.h"
 #include "joystick_prog.h"
 #include "spinning_rainbow.h"
+#include "mama_lauda.h"
 #include "stars.h"
 #include "pixels.h"
 
@@ -16,7 +17,7 @@
 #define DELAY 50
 #define N_LEDS 200
 #define BRIGHNESS_SHIFT 3
-#define N_PROGS 3
+#define N_PROGS 4
 
 int main()
 {
@@ -82,6 +83,10 @@ int main()
             {
                 pixels_produce_output(frame, buffer);
             }
+            if (incer % N_PROGS == 3)
+            {
+                mama_lauda_produce_output(frame, buffer);
+            }
 
             frame++;
 
@@ -93,7 +98,7 @@ int main()
 
             led = !led;
 
-            nextFrameTime = currTime + 500 * 1000;
+            nextFrameTime = currTime + 20 * 1000;
         }
     }
 

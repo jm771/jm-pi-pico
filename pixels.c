@@ -22,7 +22,7 @@ void pixels_produce_output(unsigned int frame, uint32_t *buffer)
             {
                 for (size_t j2 = 0; j2 < 3; j2++)
                 {
-                    write_pixel(buffer, j * 3 + j2, i * 3 + i2, color);
+                    write_pixel(buffer, i * 3 + i2, j * 3 + j2, color);
                 }
             }
         }

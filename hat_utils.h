@@ -20,6 +20,7 @@
 #define ROW_9_OFFSET (ROW_8_OFFSET + ROW_8_LEN)
 #define VALID_LED_START N_LEDS - 1 - ROW_9_OFFSET - ROW_9_LEN
 
-void write_pixel(uint32_t *buffer, uint32_t row, uint32_t col, uint32_t val);
+void write_pixel(uint32_t *buffer, uint32_t col, uint32_t row, uint32_t val);
+void blank_buffer(uint32_t *buffer);
 
 #endif

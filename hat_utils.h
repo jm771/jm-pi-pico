@@ -15,10 +15,11 @@
 
 // #define ROW_6_OFFSET (N_FULL_ROWS * FULL_ROW_LEN)
 // #define ROW_7_OFFSET (ROW_6_OFFSET + ROW_6_LEN)
-#define ROW_7_OFFSET (N_FULL_ROWS * FULL_ROW_LEN) + 1
-#define ROW_8_OFFSET (ROW_7_OFFSET + ROW_7_LEN)
-#define ROW_9_OFFSET (ROW_8_OFFSET + ROW_8_LEN)
-#define VALID_LED_START N_LEDS - 1 - ROW_9_OFFSET - ROW_9_LEN
+#define ROW_6_END (N_FULL_ROWS * FULL_ROW_LEN)
+#define ROW_7_END (ROW_6_END + ROW_7_LEN)
+#define ROW_8_END (ROW_7_END + ROW_8_LEN)
+#define ROW_9_END (ROW_8_END + ROW_9_LEN)
+#define VALID_LED_START N_LEDS - ROW_9_END
 
 void write_pixel(uint32_t *buffer, uint32_t col, uint32_t row, uint32_t val);
 void blank_buffer(uint32_t *buffer);

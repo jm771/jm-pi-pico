@@ -10,29 +10,25 @@ uint32_t get_pixel_offset_pixel_for_row(uint32_t row, uint32_t col)
 {
     if (row == 9)
     {
-        return ROW_9_OFFSET + INTERP(col, ROW_9_LEN);
+        return N_LEDS - ROW_9_END + INTERP(col, ROW_9_LEN);
     }
     if (row == 8)
     {
-        return ROW_8_OFFSET + INTERP(col, ROW_8_LEN);
+        return N_LEDS - ROW_8_END + INTERP(col, ROW_8_LEN);
     }
     if (row == 7)
     {
-        return ROW_7_OFFSET + INTERP(col, ROW_7_LEN);
+        return N_LEDS - ROW_7_END + INTERP(col, ROW_7_LEN);
     }
-    // if (row == 6)
-    // {
-    //     return ROW_6_OFFSET + INTERP(col, ROW_6_LEN);
-    // }
     else
     {
-        return (row * ROW_WIDTH) + col;
+        return N_LEDS - ROW_WIDTH - ((row)*ROW_WIDTH) + col;
     }
 }
 
 void write_pixel(uint32_t *buffer, uint32_t col, uint32_t row, uint32_t val)
 {
-    uint32_t index = N_LEDS - 1 - get_pixel_offset_pixel_for_row(row, col);
+    uint32_t index = get_pixel_offset_pixel_for_row(row, col);
     printf("%lu, %lu: %lu\n", row, col, index);
 
     buffer[index] = val;

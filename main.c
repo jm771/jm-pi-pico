@@ -11,6 +11,7 @@
 #include "stars.h"
 #include "pixels.h"
 #include "pico/bootrom.h"
+#include "tusb.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -20,16 +21,30 @@
 #define BRIGHNESS_SHIFT 3
 #define N_PROGS 4
 
+bool letsReset = false;
+
+void tud_cdc_rx_cb(uint8_t itf)
+{
+    (void)itf;
+    while (tud_cdc_available())
+    {
+        char c = tud_cdc_read_char();
+        if (c == 'r')
+        {
+            letsReset = true;
+        }
+    }
+}
+
 int main()
 {
     uint32_t buffer[N_LEDS];
-
-    reset_usb_boot(0, 0);
 
     gpio_init(PICO_DEFAULT_LED_PIN);
     init_joystick();
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     stdio_init_all();
+    tusb_init();
 
     // PIO
     PIO pio;
@@ -48,6 +63,17 @@ int main()
 
     while (true)
     {
+        tud_task();
+        if (letsReset)
+        {
+            blank_buffer(buffer);
+            for (int i = 0; i < N_LEDS; i++)
+            {
+                put_pixel(pio, sm, 0);
+            }
+            reset_usb_boot(0, 0);
+        }
+
         int64_t currTime = get_absolute_time();
 
         if (currTime > nextFrameTime)

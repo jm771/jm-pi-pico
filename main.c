@@ -10,6 +10,7 @@
 #include "mama_lauda.h"
 #include "stars.h"
 #include "pixels.h"
+#include "pico/bootrom.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -22,6 +23,8 @@
 int main()
 {
     uint32_t buffer[N_LEDS];
+
+    reset_usb_boot(0, 0);
 
     gpio_init(PICO_DEFAULT_LED_PIN);
     init_joystick();

@@ -15,3 +15,7 @@ setup: ${BUILD_DIR}
 
 clean:
 	yes | rm -rf ${BUILD_DIR}
+
+
+deploy: bin
+	./deploy.sh

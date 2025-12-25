@@ -100,19 +100,19 @@ int main()
             gpio_put(PICO_DEFAULT_LED_PIN, led);
 
             // joystick_prog_produce_output(frame, buffer, N_LEDS);
+            // if (incer % N_PROGS == 0)
+            // {
+            //     spinning_rainbow_produce_output(frame, buffer);
+            // }
+            // if (incer % N_PROGS == 1)
+            // {
+            //     stars_produce_output(frame, buffer);
+            // }
+            // if (incer % N_PROGS == 2)
+            // {
+            //     pixels_produce_output(frame, buffer);
+            // }
             if (incer % N_PROGS == 0)
-            {
-                spinning_rainbow_produce_output(frame, buffer);
-            }
-            if (incer % N_PROGS == 1)
-            {
-                stars_produce_output(frame, buffer);
-            }
-            if (incer % N_PROGS == 2)
-            {
-                pixels_produce_output(frame, buffer);
-            }
-            if (incer % N_PROGS == 3)
             {
                 mama_lauda_produce_output(frame, buffer);
             }

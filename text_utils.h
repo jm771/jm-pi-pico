@@ -5,7 +5,8 @@
 
 #include "stdint.h"
 
-uint32_t write_char_4pt(uint32_t *buffer, char character, uint32_t color, uint32_t x, uint32_t y);
-uint32_t write_char_8pt(uint32_t *buffer, char character, uint32_t color, uint32_t x, uint32_t y);
+uint32_t write_char_4pt(uint32_t *buffer, char character, uint32_t color, int32_t x, int32_t y);
+uint32_t get_8pt_width(char character);
+void write_char_8pt(uint32_t *buffer, char character, uint32_t color, int32_t x_off);
 
 #endif

@@ -112,7 +112,7 @@ char *get_8pt_char(char character)
     }
 }
 
-void write_character(uint32_t *buffer, char *string, uint32_t color, uint32_t x, uint32_t y, uint32_t min_x, uint32_t max_x)
+void write_character(uint32_t *buffer, char *string, uint32_t color, int32_t x, int32_t y)
 {
     printf("writing\n");
     uint32_t j = y;
@@ -131,9 +131,11 @@ void write_character(uint32_t *buffer, char *string, uint32_t color, uint32_t x,
         {
             if (*string == '#')
             {
-                if (x_off >= min_x && x_off < max_x)
+                const int32_t x_res = x_off + x;
+                // TODO this is a nasty back
+                if (x_res >= 0 && x_res < ROW_WIDTH - 3)
                 {
-                    write_pixel(buffer, ((x + x_off) % FULL_ROW_LEN), j, color);
+                    write_pixel(buffer, x_res, j, color);
                 }
                 // printf("#");
             }
@@ -147,15 +149,15 @@ void write_character(uint32_t *buffer, char *string, uint32_t color, uint32_t x,
     }
 }
 
-uint32_t write_char_4pt(uint32_t *buffer, char character, uint32_t color, uint32_t x, uint32_t y)
+uint32_t write_char_4pt(uint32_t *buffer, char character, uint32_t color, int32_t x, int32_t y)
 {
     uint32_t const width = get_4pt_width(character);
-    write_character(buffer, get_4pt_char(character), color, x, y, 0, width);
+    write_character(buffer, get_4pt_char(character), color, x, y);
     return width;
 }
 
-uint32_t write_char_8pt(uint32_t *buffer, char character, uint32_t color, uint32_t x_off, tr)
+void write_char_8pt(uint32_t *buffer, char character, uint32_t color, int32_t x_off)
 {
     write_character(buffer, get_8pt_char(character), color, x_off, 7);
-    return get_8pt_width(character);
+    // return get_8pt_width(character);
 }

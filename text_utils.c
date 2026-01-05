@@ -30,10 +30,10 @@ char *get_4pt_char(char character)
                "###\n"
                "# #\n";
     case 'd':
-        return "## \n"
-               "# #\n"
-               "# #\n"
-               "## \n";
+        return "##   \n"
+               "# #     \n"
+               "# #    \n"
+               "##     \n";
     case 'l':
         return "#  \n"
                "#  \n"
@@ -68,6 +68,8 @@ uint32_t get_8pt_width(char character)
         return 8;
     case 'r':
         return 7;
+    case 'y':
+        return 8;
     default:
         return 4;
     }
@@ -104,6 +106,15 @@ char *get_8pt_char(char character)
                "## ##\n"
                "##  ##\n"
                "##   ##\n";
+    case 'y':
+        return "##    ##\n"
+               " ##  ##\n"
+               "  ####\n"
+               "   ##\n"
+               "   ##\n"
+               "   ##\n"
+               "   ##\n"
+               "   ##\n";
     default:
         return "####\n"
                "####\n"

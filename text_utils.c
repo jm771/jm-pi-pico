@@ -30,10 +30,10 @@ char *get_4pt_char(char character)
                "###\n"
                "# #\n";
     case 'd':
-        return "##   \n"
-               "# #     \n"
-               "# #    \n"
-               "##     \n";
+        return "## \n"
+               "# #\n"
+               "# #\n"
+               "## \n";
     case 'l':
         return "#  \n"
                "#  \n"

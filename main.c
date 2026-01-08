@@ -119,7 +119,23 @@ int main()
                 mama_lauda_produce_output(frame, buffer);
             }
 
-            dotstar_write_pattern();
+            // uint32_t color = 0xff0000;
+
+            // This wants BGR colours
+
+            uint32_t pixels[64];
+
+            memset(pixels, 0, 64 * sizeof(uint32_t));
+
+            for (size_t i = 0; i < 4; i += 4)
+            {
+                pixels[i] = 0xff0000;     // R
+                pixels[i + 1] = 0xff00;   // G
+                pixels[i + 2] = 0xff;     // B
+                pixels[i + 3] = 0xffffff; // B
+            }
+
+            dotstar_write_pattern(pixels, 64);
 
             frame++;
 

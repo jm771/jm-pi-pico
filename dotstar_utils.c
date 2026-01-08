@@ -2,6 +2,7 @@
 #include "hardware/gpio.h"
 #include "hardware/spi.h"
 
+/// This is kinda screwed because you misassumed endianness
 typedef union
 {
     uint32_t value;
@@ -11,7 +12,7 @@ typedef union
 void add_frame_header(converter_t *data, uint8_t brightness)
 {
     data->bytes[0] = 0xE0;
-    data->bytes[0] |= (brightness >> 3);
+    data->bytes[0] |= (brightness);
 }
 
 void dotstar_init()
@@ -22,11 +23,11 @@ void dotstar_init()
     // LEDs are speced to work between 800 and 1200 Khz
     spi_init(spi, 1000 * 1000);
 
-    spi_set_format(spi0, // SPI instance
-                   8,    // Number of bits per transfer (Valid values 4..16.)
-                   1,    // Polarity (CPOL)
-                   1,    // Phase (CPHA)
-                   SPI_MSB_FIRST);
+    spi_set_format(spi0,       // SPI instance
+                   8,          // Number of bits per transfer (Valid values 4..16.)
+                   SPI_CPOL_1, // Polarity (CPOL)
+                   SPI_CPHA_1, // Phase (CPHA)
+                   SPI_LSB_FIRST);
 
     // These are the pins physically connected to the spi0 interface
     const uint sck_pin = 18;
@@ -41,6 +42,9 @@ void dotstar_write_pattern(uint32_t const *buffer, size_t len)
 {
     spi_inst_t *spi = spi0;
 
+    // 0 to 31
+    uint8_t const brightness = 2;
+
     converter_t const startFrame = {0};
     converter_t const endFrame = {0xffffffff};
 
@@ -50,8 +54,11 @@ void dotstar_write_pattern(uint32_t const *buffer, size_t len)
 
     for (size_t i = 0; i < len; i++)
     {
-        pixel.value = buffer[i];
-        add_frame_header(&pixel, 0xff);
+        // pixel.value = buffer[i];
+        pixel.bytes[1] = buffer[i] >> 0;  // B >> 16;
+        pixel.bytes[2] = buffer[i] >> 8;  // G
+        pixel.bytes[3] = buffer[i] >> 16; // R
+        add_frame_header(&pixel, brightness);
         spi_write_blocking(spi, pixel.bytes, 4);
     }
 

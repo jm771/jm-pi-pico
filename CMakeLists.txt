@@ -23,6 +23,7 @@ target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror)
 target_link_libraries(${project_name}
 	pico_stdlib
 	hardware_pio
+	hardware_spi
 	)
 
 pico_enable_stdio_usb(${project_name} 1)

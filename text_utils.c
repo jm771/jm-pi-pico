@@ -63,13 +63,13 @@ uint32_t get_8pt_width(char character)
     switch (character)
     {
     case 'e':
-        return 6;
+        return 4;
     case 'm':
-        return 8;
+        return 5;
     case 'r':
-        return 7;
+        return 4;
     case 'y':
-        return 8;
+        return 3;
     default:
         return 4;
     }
@@ -79,42 +79,44 @@ char *get_8pt_char(char character)
 {
     switch (character)
     {
+    case 'a':
+
     case 'e':
-        return "######\n"
-               "##   #\n"
-               "##\n"
+        return "\n"
+               "\n"
                "####\n"
+               "#\n"
                "####\n"
-               "##\n"
-               "##   #\n"
-               "######\n";
+               "#\n"
+               "#\n"
+               "####\n";
     case 'm':
-        return "########\n"
-               "########\n"
-               "## ## ##\n"
-               "## ## ##\n"
-               "## ## ##\n"
-               "## ## ##\n"
-               "## ## ##\n"
-               "## ## ##\n";
-    case 'r':
-        return "#####\n"
-               "######\n"
-               "##  ##\n"
-               "##  ##\n"
+        return "\n"
+               "\n"
                "#####\n"
-               "## ##\n"
-               "##  ##\n"
-               "##   ##\n";
+               "#####\n"
+               "# # #\n"
+               "# # #\n"
+               "# # #\n"
+               "# # #\n";
+    case 'r':
+        return "\n"
+               "\n"
+               "###\n"
+               "# #\n"
+               "###\n"
+               "# #\n"
+               "# ##\n"
+               "#  #\n";
     case 'y':
-        return "##    ##\n"
-               " ##  ##\n"
-               "  ####\n"
-               "   ##\n"
-               "   ##\n"
-               "   ##\n"
-               "   ##\n"
-               "   ##\n";
+        return "\n"
+               "\n"
+               "# #\n"
+               "# #\n"
+               "###\n"
+               " #\n"
+               " #\n"
+               " #\n";
     default:
         return "####\n"
                "####\n"

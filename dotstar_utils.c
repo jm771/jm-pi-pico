@@ -2,17 +2,29 @@
 #include "hardware/gpio.h"
 #include "hardware/spi.h"
 
-/// This is kinda screwed because you misassumed endianness
-typedef union
+typedef struct
 {
-    uint32_t value;
     uint8_t bytes[4];
-} converter_t;
+} frame_t;
 
-void add_frame_header(converter_t *data, uint8_t brightness)
+static frame_t const START_FRAME = {0};
+static frame_t const END_FRAME = {{0xff, 0xff, 0xff, 0xff}};
+
+frame_t from_rgb_brightness(uint32_t rgb, uint8_t brightness)
 {
-    data->bytes[0] = 0xE0;
-    data->bytes[0] |= (brightness);
+    frame_t pixel;
+    pixel.bytes[0] = 0xE0;          // Must lead with 111
+    pixel.bytes[0] |= (brightness); // 5 bits of brightness infp
+    pixel.bytes[1] = rgb >> 0;      // B
+    pixel.bytes[2] = rgb >> 8;      // G
+    pixel.bytes[3] = rgb >> 16;     // R
+    return pixel;
+}
+
+void write_frame_blocking(frame_t pixel)
+{
+    spi_inst_t *spi = spi0;
+    spi_write_blocking(spi, pixel.bytes, 4);
 }
 
 void dotstar_init()
@@ -40,31 +52,17 @@ void dotstar_init()
 
 void dotstar_write_pattern(uint32_t const *buffer, size_t len)
 {
-    spi_inst_t *spi = spi0;
 
     // 0 to 31
     uint8_t const brightness = 2;
 
-    converter_t const startFrame = {0};
-    converter_t const endFrame = {0xffffffff};
-
-    converter_t pixel;
-
-    spi_write_blocking(spi, startFrame.bytes, 4);
+    write_frame_blocking(START_FRAME);
 
     for (size_t i = 0; i < len; i++)
     {
         // pixel.value = buffer[i];
-        pixel.bytes[1] = buffer[i] >> 0;  // B >> 16;
-        pixel.bytes[2] = buffer[i] >> 8;  // G
-        pixel.bytes[3] = buffer[i] >> 16; // R
-        add_frame_header(&pixel, brightness);
-        spi_write_blocking(spi, pixel.bytes, 4);
+        write_frame_blocking(from_rgb_brightness(buffer[i], brightness));
     }
 
-    spi_write_blocking(spi, endFrame.bytes, 4);
-
-    // const uint cs_pin = 17;
-
-    // const uint miso_pin = 16;
+    write_frame_blocking(END_FRAME);
 }

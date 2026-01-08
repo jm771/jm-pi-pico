@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.13...3.27)
 
+# Generate compile_commands.json for VSCode IntelliSense
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 include( ../pico-sdk/pico_sdk_init.cmake)
 
 set(project_name $ENV{PROJECT_NAME})

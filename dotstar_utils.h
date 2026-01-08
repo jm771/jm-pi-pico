@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-void init();
+void dotstar_init();
 
-void write_pattern(uint32_t const *buffer);
+void dostar_write_pattern(uint32_t const *buffer, size_t len);
 
 #endif

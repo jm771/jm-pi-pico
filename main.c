@@ -12,6 +12,7 @@
 #include "pixels.h"
 #include "pico/bootrom.h"
 #include "tusb.h"
+#include "dotstar_utils.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -40,6 +41,7 @@ int main()
 {
     uint32_t buffer[N_LEDS];
 
+    dotstar_init();
     gpio_init(PICO_DEFAULT_LED_PIN);
     init_joystick();
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
@@ -100,22 +102,24 @@ int main()
             gpio_put(PICO_DEFAULT_LED_PIN, led);
 
             // joystick_prog_produce_output(frame, buffer, N_LEDS);
-            // if (incer % N_PROGS == 0)
-            // {
-            //     spinning_rainbow_produce_output(frame, buffer);
-            // }
-            // if (incer % N_PROGS == 1)
-            // {
-            //     stars_produce_output(frame, buffer);
-            // }
-            // if (incer % N_PROGS == 2)
-            // {
-            //     pixels_produce_output(frame, buffer);
-            // }
             if (incer % N_PROGS == 0)
+            {
+                spinning_rainbow_produce_output(frame, buffer);
+            }
+            if (incer % N_PROGS == 1)
+            {
+                stars_produce_output(frame, buffer);
+            }
+            if (incer % N_PROGS == 2)
+            {
+                pixels_produce_output(frame, buffer);
+            }
+            if (incer % N_PROGS == 3)
             {
                 mama_lauda_produce_output(frame, buffer);
             }
+
+            dotstar_write_pattern();
 
             frame++;
 

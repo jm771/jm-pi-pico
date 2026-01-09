@@ -32,6 +32,7 @@ void write_frame_blocking(frame_t pixel)
 
 void dma_init(spi_inst_t *spi)
 {
+    dma_channel_claim(0);
     dma_channel_config_t config = dma_channel_get_default_config(0);
     dma_channel_config_t *conf = &config;
     channel_config_set_read_address_update_type(conf, DMA_ADDRESS_UPDATE_INCREMENT);
@@ -75,7 +76,7 @@ void dotstar_init()
     gpio_set_function(mosi_pin, GPIO_FUNC_SPI);
     // gpio_set_function(miso_pin, GPIO_FUNC_SPI);
 
-    dma_channel_claim(0);
+    dma_init(spi);
 }
 
 void dotstar_write_pattern(uint32_t const *input, size_t len)

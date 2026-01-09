@@ -16,6 +16,7 @@ static inline uint32_t urgb_u32(uint8_t r, uint8_t g, uint8_t b)
            (uint32_t)(b);
 }
 
+// I don't think this actually does anyhthing...
 static inline uint32_t adjustBrightness(uint32_t val, size_t shift)
 {
     uint32_t m1 = 0xff >> shift;

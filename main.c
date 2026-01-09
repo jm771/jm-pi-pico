@@ -13,6 +13,7 @@
 #include "pico/bootrom.h"
 #include "tusb.h"
 #include "dotstar_utils.h"
+#include "dma_helpers.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -24,6 +25,7 @@
 
 bool letsReset = false;
 
+// magic interupt name for recieving a character over com (over USB)
 void tud_cdc_rx_cb(uint8_t itf)
 {
     (void)itf;
@@ -37,24 +39,39 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
-int main()
-{
-    uint32_t buffer[N_LEDS];
+PIO pio;
+uint sm;
 
+void main_led_init()
+{
+    // PIO
+
+    uint offset;
+
+    bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, OTHER_LED_PIN, 1, true);
+    hard_assert(success);
+    ws2812_program_init(pio, sm, offset, OTHER_LED_PIN, WS2812_FREQ);
+    // TODO might need to left shift
+    // dma_init(1, DREQ_PIO0_TX0, pio->txf, DMA_SIZE_32);
+}
+
+void main_init()
+{
     dotstar_init();
     gpio_init(PICO_DEFAULT_LED_PIN);
     init_joystick();
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
     stdio_init_all();
     tusb_init();
+    main_led_init();
+}
 
-    // PIO
-    PIO pio;
-    uint sm;
-    uint offset;
-    bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, OTHER_LED_PIN, 1, true);
-    hard_assert(success);
-    ws2812_program_init(pio, sm, offset, OTHER_LED_PIN, WS2812_FREQ);
+int main()
+{
+    uint32_t MainLedBuffer[N_LEDS];
+
+    main_init();
+
     bool led = true;
 
     int64_t nextFrameTime = 0;
@@ -68,11 +85,12 @@ int main()
         tud_task();
         if (letsReset)
         {
-            blank_buffer(buffer);
-            for (int i = 0; i < N_LEDS; i++)
-            {
-                put_pixel(pio, sm, 0);
-            }
+            blank_buffer(MainLedBuffer);
+            dma_send_buffer(MainLedBuffer, N_LEDS * sizeof(uint32_t));
+            // for (int i = 0; i < N_LEDS; i++)
+            // {
+            //     put_pixel(pio, sm, 0);
+            // }
             reset_usb_boot(0, 0);
         }
 
@@ -104,19 +122,19 @@ int main()
             // joystick_prog_produce_output(frame, buffer, N_LEDS);
             if (incer % N_PROGS == 0)
             {
-                spinning_rainbow_produce_output(frame, buffer);
+                spinning_rainbow_produce_output(frame, MainLedBuffer);
             }
             if (incer % N_PROGS == 1)
             {
-                stars_produce_output(frame, buffer);
+                stars_produce_output(frame, MainLedBuffer);
             }
             if (incer % N_PROGS == 2)
             {
-                pixels_produce_output(frame, buffer);
+                pixels_produce_output(frame, MainLedBuffer);
             }
             if (incer % N_PROGS == 3)
             {
-                mama_lauda_produce_output(frame, buffer);
+                mama_lauda_produce_output(frame, MainLedBuffer);
             }
 
             // uint32_t color = 0xff0000;
@@ -139,10 +157,18 @@ int main()
 
             frame++;
 
+            for (int i = 0; i < N_LEDS; i++)
+            {
+                // MainLedBuffer[i] <<= 8;
+            }
+
+            // dma_send_buffer(MainLedBuffer, N_LEDS);
+
             // TODO - would be cooler to DMA this
             for (int i = 0; i < N_LEDS; i++)
             {
-                put_pixel(pio, sm, adjustBrightness(buffer[i], BRIGHNESS_SHIFT));
+                // pio_sm_put_blocking(pio, sm, MainLedBuffer[i]);
+                put_pixel(pio, sm, MainLedBuffer[i]); // adjustBrightness(, BRIGHNESS_SHIFT));
             }
 
             led = !led;

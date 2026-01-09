@@ -60,7 +60,7 @@ void dotstar_init()
     gpio_set_function(mosi_pin, GPIO_FUNC_SPI);
     // gpio_set_function(miso_pin, GPIO_FUNC_SPI);
 
-    dma_init(0, DREQ_SPI0_TX, &spi_get_hw(spi)->dr);
+    dma_init(0, DREQ_SPI0_TX, &spi_get_hw(spi)->dr, DMA_SIZE_8);
 }
 
 void dotstar_write_pattern(uint32_t const *input, size_t len)

@@ -127,7 +127,7 @@ char *get_8pt_char(char character)
 
 void write_character(uint32_t *buffer, char *string, uint32_t color, int32_t x, int32_t y)
 {
-    printf("writing\n");
+    // printf("writing\n");
     uint32_t j = y;
     // uint32_t i = x;
     uint32_t x_off = 0;

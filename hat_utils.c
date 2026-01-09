@@ -29,7 +29,7 @@ uint32_t get_pixel_offset_pixel_for_row(uint32_t row, uint32_t col)
 void write_pixel(uint32_t *buffer, uint32_t col, uint32_t row, uint32_t val)
 {
     uint32_t index = get_pixel_offset_pixel_for_row(row, col);
-    printf("%lu, %lu: %lu\n", row, col, index);
+    // printf("%lu, %lu: %lu\n", row, col, index);
 
     buffer[index] = val;
 }

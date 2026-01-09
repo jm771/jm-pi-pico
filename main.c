@@ -148,6 +148,8 @@ int main()
             led = !led;
 
             nextFrameTime = currTime + 20 * 1000;
+
+            printf("Processed in %llu\n", get_absolute_time() - currTime);
         }
     }
 

@@ -127,7 +127,7 @@ int main()
 
             memset(pixels, 0, 64 * sizeof(uint32_t));
 
-            for (size_t i = 0; i < 4; i += 4)
+            for (size_t i = 0; i < 64; i += 4)
             {
                 pixels[i] = 0xff0000;     // R
                 pixels[i + 1] = 0xff00;   // G

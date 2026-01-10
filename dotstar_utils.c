@@ -7,6 +7,7 @@
 #define N_FRAMES (N_DOTS + 2)
 #define FRAME_SIZE 4
 #define BUFFER_SIZE (N_FRAMES * FRAME_SIZE)
+#define DOTSTAR_DMA_CHANNEL 0
 
 static uint8_t Buffer[BUFFER_SIZE];
 
@@ -60,7 +61,7 @@ void dotstar_init()
     gpio_set_function(mosi_pin, GPIO_FUNC_SPI);
     // gpio_set_function(miso_pin, GPIO_FUNC_SPI);
 
-    dma_init(0, DREQ_SPI0_TX, &spi_get_hw(spi)->dr, DMA_SIZE_8);
+    dma_init(DOTSTAR_DMA_CHANNEL, DREQ_SPI0_TX, &spi_get_hw(spi)->dr, DMA_SIZE_8);
 }
 
 void dotstar_write_pattern(uint32_t const *input, size_t len)
@@ -79,5 +80,5 @@ void dotstar_write_pattern(uint32_t const *input, size_t len)
 
     // spi_write_blocking(spi0, Buffer, BUFFER_SIZE);
 
-    dma_send_buffer(Buffer, BUFFER_SIZE);
+    dma_send_buffer(DOTSTAR_DMA_CHANNEL, Buffer, BUFFER_SIZE);
 }

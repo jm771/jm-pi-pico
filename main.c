@@ -23,6 +23,8 @@
 #define BRIGHNESS_SHIFT 3
 #define N_PROGS 4
 
+#define MAIN_LEDS_DMA_CHANNEL 1
+
 bool letsReset = false;
 
 // magic interupt name for recieving a character over com (over USB)
@@ -39,20 +41,16 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
-PIO pio;
-uint sm;
-
 void main_led_init()
 {
-    // PIO
-
+    PIO pio;
+    uint sm;
     uint offset;
-
     bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, OTHER_LED_PIN, 1, true);
     hard_assert(success);
     ws2812_program_init(pio, sm, offset, OTHER_LED_PIN, WS2812_FREQ);
-    // TODO might need to left shift
-    // dma_init(1, DREQ_PIO0_TX0, pio->txf, DMA_SIZE_32);
+
+    dma_init(MAIN_LEDS_DMA_CHANNEL, pio_get_dreq(pio, sm, true), &(pio->txf[sm]), DMA_SIZE_32);
 }
 
 void main_init()
@@ -69,6 +67,7 @@ void main_init()
 int main()
 {
     uint32_t MainLedBuffer[N_LEDS];
+    uint32_t LedDrawBuffer[N_LEDS];
 
     main_init();
 
@@ -86,7 +85,7 @@ int main()
         if (letsReset)
         {
             blank_buffer(MainLedBuffer);
-            dma_send_buffer(MainLedBuffer, N_LEDS * sizeof(uint32_t));
+            dma_send_buffer(MAIN_LEDS_DMA_CHANNEL, MainLedBuffer, N_LEDS * sizeof(uint32_t));
             // for (int i = 0; i < N_LEDS; i++)
             // {
             //     put_pixel(pio, sm, 0);
@@ -137,10 +136,7 @@ int main()
                 mama_lauda_produce_output(frame, MainLedBuffer);
             }
 
-            // uint32_t color = 0xff0000;
-
-            // This wants BGR colours
-
+            // for dotstar
             uint32_t pixels[64];
 
             memset(pixels, 0, 64 * sizeof(uint32_t));
@@ -159,17 +155,10 @@ int main()
 
             for (int i = 0; i < N_LEDS; i++)
             {
-                // MainLedBuffer[i] <<= 8;
+                LedDrawBuffer[i] = adjustBrightness(MainLedBuffer[i], BRIGHNESS_SHIFT) << 8u;
             }
 
-            // dma_send_buffer(MainLedBuffer, N_LEDS);
-
-            // TODO - would be cooler to DMA this
-            for (int i = 0; i < N_LEDS; i++)
-            {
-                // pio_sm_put_blocking(pio, sm, MainLedBuffer[i]);
-                put_pixel(pio, sm, MainLedBuffer[i]); // adjustBrightness(, BRIGHNESS_SHIFT));
-            }
+            dma_send_buffer(MAIN_LEDS_DMA_CHANNEL, LedDrawBuffer, N_LEDS);
 
             led = !led;
 

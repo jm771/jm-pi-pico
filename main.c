@@ -14,6 +14,8 @@
 #include "tusb.h"
 #include "dotstar_utils.h"
 #include "dma_helpers.h"
+// #include "pico/status_led.h"
+#include "pico/cyw43_arch.h"
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -56,12 +58,32 @@ void main_led_init()
 void main_init()
 {
     dotstar_init();
+
+    cyw43_arch_init();
+
+    // only defined on pico 1
+#ifdef PICO_DEFAULT_LED_PIN
     gpio_init(PICO_DEFAULT_LED_PIN);
-    init_joystick();
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+#endif
+    init_joystick();
+
     stdio_init_all();
     tusb_init();
     main_led_init();
+}
+
+void set_onboard_led(bool on)
+{
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, on);
+    // gpio_put(WL_GPIO0, on);
+#ifdef PICO_DEFAULT_LED_PIN
+    gpio_put(PICO_DEFAULT_LED_PIN, on);
+#elifdef CYW43_WL_GPIO_LED_PIN
+
+#else
+#error Need to define some sort on on board LED
+#endif
 }
 
 int main()
@@ -116,7 +138,7 @@ int main()
                 debouncing = 0;
             }
 
-            gpio_put(PICO_DEFAULT_LED_PIN, led);
+            set_onboard_led(led);
 
             // joystick_prog_produce_output(frame, buffer, N_LEDS);
             if (incer % N_PROGS == 0)

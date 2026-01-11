@@ -150,6 +150,7 @@ int main()
     uint32_t LedDrawBuffer[N_LEDS];
 
     main_init();
+    access_point_init();
 
     bool led = true;
 

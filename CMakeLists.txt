@@ -13,7 +13,8 @@ project(${project_name})
 
 pico_sdk_init()
 
-FILE(GLOB c_code_src *.c *.h)
+FILE(GLOB c_code_src *.c *.h access_point/*.c access_point/*.h access_point/dhcpserver/*.c
+access_point/dhcpserver/*.h access_point/dnsserver/*.c access_point/dnsserver/*.h)
 FILE(GLOB pio_code_src *.pio)
 
 
@@ -24,7 +25,10 @@ target_sources(${project_name} PRIVATE ${c_code_src})
 
 target_include_directories(${project_name} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
-        )
+	${CMAKE_CURRENT_LIST_DIR}/access_point
+        ${CMAKE_CURRENT_LIST_DIR}/access_point/dhcpserver
+        ${CMAKE_CURRENT_LIST_DIR}/access_point/dnsserver
+)
 
 # todo - want -pedantic
 target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror)

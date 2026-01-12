@@ -1,0 +1,34 @@
+.pio_version 0
+
+.program port_forward
+.wrap_target
+    mov  pins, pins
+.wrap
+
+% c-sdk {
+static inline void port_forward_program_init(PIO pio, uint sm, uint offset, uint in_pin, uint out_pin) {
+
+    //This sets pin to low before starting state machine (default state)
+    //pio_sm_set_pins_with_mask(pio, sm, 0, (1u << out_pin));
+
+    pio_gpio_init(pio, in_pin);
+    pio_gpio_init(pio, out_pin);
+
+    // set just the in and out pin, st out pin is 1 and in pin is zero (i.e. set pin dirs)
+    //pio_sm_set_pindirs_with_mask(pio, sm, (1u << out_pin), (1u << out_pin) | (1u << in_pin))
+    pio_sm_set_consecutive_pindirs(pio, sm, out_pin, 1, true);
+    pio_sm_set_consecutive_pindirs(pio, sm, in_pin, 1, false);
+
+
+    pio_sm_config c = ws2812_program_get_default_config(offset);
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_NONE);
+    sm_config_set_out_pins(&c, out_pin, 1);
+
+    // I am not sure why this misses the second arg
+    sm_config_set_in_pins(&c, in_pin);
+    sm_config_set_in_pin_count(&c, 1);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

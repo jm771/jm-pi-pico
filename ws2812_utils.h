@@ -1,5 +1,5 @@
-#ifndef WS2818_UTILS_h
-#define WS2818_UTILS_h
+#ifndef WS2812_UTILS_h
+#define WS2812_UTILS_h
 
 #include <stdio.h>
 #include "hardware/pio.h"

@@ -15,8 +15,11 @@
 #include "dotstar_utils.h"
 #include "dma_helpers.h"
 // #include "pico/status_led.h"
+
+#ifdef PICO_CYW43_SUPPORTED
 #include "pico/cyw43_arch.h"
 #include "picow_access_point.h"
+#endif
 
 #define WS2812_FREQ 800000
 #define OTHER_LED_PIN 0
@@ -30,6 +33,8 @@ bool letsReset = false;
 
 int server_init()
 {
+#ifdef PICO_CYW43_SUPPORTED
+    cyw43_arch_init();
 
     static TCP_SERVER_T server; // state = calloc(1, sizeof(TCP_SERVER_T));
     TCP_SERVER_T *state = &server;
@@ -56,13 +61,15 @@ int server_init()
         DEBUG_printf("failed to open server\n");
         return 1;
     }
-
+#endif
     return 0;
 }
 
 void server_poll()
 {
+#ifdef PICO_CYW43_SUPPORTED
     cyw43_arch_poll();
+#endif
 }
 
 // magic interupt name for recieving a character over com (over USB)
@@ -99,7 +106,6 @@ void main_init()
 {
     dotstar_init();
     stdio_init_all();
-    cyw43_arch_init();
     server_init();
 
 // only defined on pico 1

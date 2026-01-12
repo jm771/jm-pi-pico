@@ -4,24 +4,33 @@ cmake_minimum_required(VERSION 3.13...3.27)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Comment this out to go back to prev board
-set(PICO_BOARD pico2_w)
+# set(PICO_BOARD pico2_w)
+set(PICO_BOARD pico2)
 
 include( ../pico-sdk/pico_sdk_init.cmake)
 
-set(project_name $ENV{PROJECT_NAME})
+set(project_name hat_controller)
 project(${project_name})
 
 pico_sdk_init()
 
-FILE(GLOB c_code_src *.c *.h access_point/*.c access_point/*.h access_point/dhcpserver/*.c
+FILE(GLOB c_code_src *.c *.h)
+
+
+ if(PICO_CYW43_SUPPORTED)
+	FILE(GLOB server_src  access_point/*.c access_point/*.h access_point/dhcpserver/*.c
 access_point/dhcpserver/*.h access_point/dnsserver/*.c access_point/dnsserver/*.h)
+ else()
+	set(server_src )
+ endif()
+
 FILE(GLOB pio_code_src *.pio)
 
 
 add_executable(${project_name})
 
 pico_generate_pio_header(${project_name} ${pio_code_src})
-target_sources(${project_name} PRIVATE ${c_code_src})
+target_sources(${project_name} PRIVATE ${c_code_src} ${server_src})
 
 target_include_directories(${project_name} PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
@@ -39,8 +48,11 @@ target_link_libraries(${project_name}
 	hardware_pio
 	hardware_spi
 	hardware_dma
-	pico_cyw43_arch_lwip_poll
 	)
+
+if(PICO_CYW43_SUPPORTED)
+target_link_libraries(${project_name} pico_cyw43_arch_lwip_poll)
+endif()
 
 pico_enable_stdio_usb(${project_name} 1)
 pico_enable_stdio_uart(${project_name} 0)

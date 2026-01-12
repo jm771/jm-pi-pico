@@ -17,7 +17,7 @@ else
 fi
 
 sudo /usr/bin/mount -t drvfs D\: /mnt/d
-cp ./build/midi_controller.uf2 /mnt/d/
+cp ./build/hat_controller.uf2 /mnt/d/
 
 sleep 1
 ./mount_com.sh

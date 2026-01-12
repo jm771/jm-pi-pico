@@ -2,7 +2,7 @@
 set -e -u -o pipefail
 
 if (usbipd.exe list | grep -q "USB Serial Device"); then
- COM_LINE=$(usbipd.exe list | grep "USB Serial Device")
+ COM_LINE=$(usbipd.exe list | sed -n '/Persisted:/q;p' | grep "USB Serial Device")
  echo "found COM device:\n$COM_LINE"
  DEVICE_ID=$(echo $COM_LINE | cut -d ' ' -f 1)
  if (echo $COM_LINE | grep -q "Shared"); then

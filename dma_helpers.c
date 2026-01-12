@@ -1,8 +1,8 @@
 #include "dma_helpers.h"
 
-void dma_init(uint channel, uint dreq, volatile void *write_addr, dma_channel_transfer_size_t size)
+uint dma_init(uint dreq, volatile void *write_addr, dma_channel_transfer_size_t size)
 {
-    dma_channel_claim(channel);
+    uint channel = dma_claim_unused_channel(true);
     dma_channel_config_t config = dma_channel_get_default_config(channel);
     dma_channel_config_t *conf = &config;
     channel_config_set_read_address_update_type(conf, DMA_ADDRESS_UPDATE_INCREMENT);
@@ -14,7 +14,7 @@ void dma_init(uint channel, uint dreq, volatile void *write_addr, dma_channel_tr
     dma_channel_set_config(channel, conf, false);
     dma_channel_set_write_addr(channel, write_addr, false);
 
-    // spi_get_hw(spi)->dmacr |= 0x2;
+    return channel;
 }
 
 void dma_send_buffer(uint dma_channel, void const *buffer, size_t len)

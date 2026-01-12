@@ -26,8 +26,6 @@
 #define BRIGHNESS_SHIFT 3
 #define N_PROGS 4
 
-#define MAIN_LEDS_DMA_CHANNEL 1
-
 bool letsReset = false;
 
 int server_init()
@@ -81,17 +79,20 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
+static PIO pio;
+static uint sm;
+
+static uint8_t MainLedChannel;
+
 void main_led_init()
 {
-    PIO pio;
-    uint sm;
+
     uint offset;
     bool success = pio_claim_free_sm_and_add_program_for_gpio_range(&ws2812_program, &pio, &sm, &offset, OTHER_LED_PIN, 1, true);
     hard_assert(success);
     ws2812_program_init(pio, sm, offset, OTHER_LED_PIN, WS2812_FREQ);
 
-    // This is the problem line
-    // dma_init(MAIN_LEDS_DMA_CHANNEL, pio_get_dreq(pio, sm, true), &(pio->txf[sm]), DMA_SIZE_32);
+    MainLedChannel = dma_init(pio_get_dreq(pio, sm, true), &(pio->txf[sm]), DMA_SIZE_32);
 }
 
 void main_init()
@@ -218,8 +219,7 @@ int main()
                 LedDrawBuffer[i] = adjustBrightness(MainLedBuffer[i], BRIGHNESS_SHIFT) << 8u;
             }
 
-            (void)LedDrawBuffer;
-            // dma_send_buffer(MAIN_LEDS_DMA_CHANNEL, LedDrawBuffer, N_LEDS);
+            dma_send_buffer(MainLedChannel, LedDrawBuffer, N_LEDS);
 
             led = !led;
 

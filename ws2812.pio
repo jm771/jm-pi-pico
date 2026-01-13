@@ -17,6 +17,13 @@ do_zero:
     nop            side 0 [T2 - 1] 
 .wrap
 
+.wrap_target
+bitloop:
+    mov 1, pins [T1-1]
+    mov x, pins [T2-1]
+    mov 0, pins [T3-1]
+.wrap
+
 % c-sdk {
 #include "hardware/clocks.h"
 

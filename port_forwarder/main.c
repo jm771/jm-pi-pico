@@ -1,5 +1,6 @@
 #include "hardware/pio.h"
 #include "port_forward.pio.h"
+#include "pico/stdlib.h"
 
 void port_forward_init()
 {
@@ -18,6 +19,6 @@ int main()
 
     while (true)
     {
-        sleep(1000);
+        sleep_ms(1000);
     }
 }

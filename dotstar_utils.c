@@ -2,6 +2,7 @@
 #include "hardware/gpio.h"
 #include "hardware/spi.h"
 #include "dma_helpers.h"
+#include <string.h>
 
 #define N_DOTS 64
 #define N_FRAMES (N_DOTS + 2)
@@ -10,6 +11,24 @@
 
 static uint8_t Buffer[BUFFER_SIZE];
 static uint8_t Channel;
+
+void dotstar_test()
+{
+    // for dotstar
+    uint32_t pixels[64];
+
+    memset(pixels, 0, 64 * sizeof(uint32_t));
+
+    for (size_t i = 0; i < 64; i += 4)
+    {
+        pixels[i] = 0xff0000;     // R
+        pixels[i + 1] = 0xff00;   // G
+        pixels[i + 2] = 0xff;     // B
+        pixels[i + 3] = 0xffffff; // B
+    }
+
+    dotstar_write_pattern(pixels, 64);
+}
 
 void init_buffer()
 {

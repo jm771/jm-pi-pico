@@ -14,7 +14,7 @@ project(${project_name})
 
 pico_sdk_init()
 
-FILE(GLOB c_code_src *.c *.h)
+FILE(GLOB c_code_src *.c *.h server/*.c server/*.h)
 
 
  if(PICO_CYW43_SUPPORTED)
@@ -37,6 +37,7 @@ target_include_directories(${project_name} PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}/access_point
         ${CMAKE_CURRENT_LIST_DIR}/access_point/dhcpserver
         ${CMAKE_CURRENT_LIST_DIR}/access_point/dnsserver
+		 ${CMAKE_CURRENT_LIST_DIR}/server
 )
 
 # todo - want -pedantic

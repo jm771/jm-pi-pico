@@ -8,4 +8,6 @@ void dotstar_init();
 
 void dotstar_write_pattern(uint32_t const *buffer, size_t len);
 
+void dotstar_test();
+
 #endif

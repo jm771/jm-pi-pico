@@ -15,12 +15,12 @@ project(${project_name})
 
 pico_sdk_init()
 
-FILE(GLOB c_code_src *.c *.h server/*.c server/*.h)
+FILE(GLOB c_code_src *.c server/*.c)
 
 
  if(PICO_CYW43_SUPPORTED)
-	FILE(GLOB server_src  access_point/*.c access_point/*.h access_point/dhcpserver/*.c
-access_point/dhcpserver/*.h access_point/dnsserver/*.c access_point/dnsserver/*.h)
+	FILE(GLOB server_src  access_point/*.c  access_point/dhcpserver/*.c
+access_point/dnsserver/*.c)
  else()
 	set(server_src )
  endif()

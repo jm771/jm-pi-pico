@@ -16,6 +16,8 @@ typedef struct TCP_SERVER_T_
 {
     struct tcp_pcb *server_pcb;
     ip_addr_t gw;
+    // todo - tyepdef:
+    int (*http_response_handler)(const char *, const char *, char *, size_t);
 } TCP_SERVER_T;
 
 typedef struct TCP_CONNECT_STATE_T_
@@ -27,6 +29,7 @@ typedef struct TCP_CONNECT_STATE_T_
     int header_len;
     int result_len;
     ip_addr_t *gw;
+    TCP_SERVER_T *parent;
 } TCP_CONNECT_STATE_T;
 
 bool tcp_server_open(TCP_SERVER_T *state, const char *ap_name);

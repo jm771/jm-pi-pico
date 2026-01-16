@@ -1,11 +1,11 @@
-#ifdef PICO_CYW43_SUPPORTED
+#ifdef WIFI_SUPPORTED
 #include "pico/cyw43_arch.h"
 #include "picow_access_point.h"
 #endif
 
 int server_init()
 {
-#ifdef PICO_CYW43_SUPPORTED
+#ifdef WIFI_SUPPORTED
     cyw43_arch_init();
 
     static TCP_SERVER_T server; // state = calloc(1, sizeof(TCP_SERVER_T));
@@ -39,7 +39,7 @@ int server_init()
 
 void server_poll()
 {
-#ifdef PICO_CYW43_SUPPORTED
+#ifdef WIFI_SUPPORTED
     cyw43_arch_poll();
 #endif
 }

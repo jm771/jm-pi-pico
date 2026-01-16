@@ -5,6 +5,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Comment this out to go back to prev board
 set(PICO_BOARD pico2_w)
+# TODO - thought this was a property of pico board... guess should do it by hand or sth
 # set(PICO_BOARD pico2)
 
 include( ../pico-sdk/pico_sdk_init.cmake)
@@ -42,6 +43,10 @@ target_include_directories(${project_name} PRIVATE
 
 # todo - want -pedantic
 target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror)
+
+if(PICO_CYW43_SUPPORTED)
+target_compile_options(${project_name} PRIVATE -DWIFI_SUPPORTED)
+endif()
 
 # Add pico_stdlib library which aggregates commonly used featuresT
 target_link_libraries(${project_name}

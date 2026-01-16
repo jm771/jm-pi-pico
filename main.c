@@ -33,9 +33,7 @@ void main_init()
     stdio_init_all();
     server_init();
     onboard_led_init();
-
     init_joystick();
-
     tusb_init();
     main_led_init();
 }

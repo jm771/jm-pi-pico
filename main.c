@@ -86,11 +86,12 @@ int main()
                 debouncing = 0;
             }
 
-            dotstar_test();
-            main_led_poll(frame, incer % N_PROGS);
+            // dotstar_test();
+            // main_led_poll(frame, incer % N_PROGS);
             set_onboard_led(led);
 
             led = !led;
+            frame++;
 
             nextFrameTime = currTime + 20 * 1000;
 

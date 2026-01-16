@@ -58,8 +58,6 @@ void main_led_poll(uint32_t frame, uint32_t program_number)
 
     run_selected_program(frame, program_number, MainLedBuffer);
 
-    frame++;
-
     for (int i = 0; i < N_LEDS; i++)
     {
         LedDrawBuffer[i] = adjustBrightness(MainLedBuffer[i], BRIGHNESS_SHIFT) << 8u;

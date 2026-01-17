@@ -43,7 +43,7 @@ target_include_directories(${project_name} PRIVATE
 )
 
 # todo - want -pedantic
-target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror)
+target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror -Wno-error=unused-parameter)
 
 if(PICO_CYW43_SUPPORTED)
 target_compile_options(${project_name} PRIVATE -DWIFI_SUPPORTED)

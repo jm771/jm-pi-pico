@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define N_PROGS 4
+#define N_PROGS 7
 
 const char **GetProgramNames();
 

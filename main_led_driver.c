@@ -4,6 +4,9 @@
 #include "mama_lauda.h"
 #include "stars.h"
 #include "pixels.h"
+#include "gradient_flow.h"
+#include "bouncing_ring.h"
+#include "tempus_fulvum.h"
 
 #include "hardware/pio.h"
 #include "ws2812.pio.h"
@@ -17,7 +20,7 @@
 
 static uint8_t MainLedChannel;
 static uint32_t MainLedBuffer[N_LEDS];
-static const char *ProgramNames[] = {"Spinning Rainbow", "Stars", "Blocks", "Text"};
+static const char *ProgramNames[] = {"Spinning Rainbow", "Stars", "Blocks", "Text", "Gradient", "Bouncing Ring", "Tempus Fulvum"};
 
 const char **GetProgramNames()
 {
@@ -55,6 +58,8 @@ void run_selected_program(uint32_t frame, uint32_t program_number, uint32_t *buf
         return pixels_produce_output(frame, buffer);
     case 3:
         return mama_lauda_produce_output(frame, buffer);
+    case 4:
+        return gradient_flow_produce_output(frame, buffer);
     }
 }
 

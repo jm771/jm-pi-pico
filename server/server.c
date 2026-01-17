@@ -3,25 +3,32 @@
 #include "picow_access_point.h"
 #endif
 
-#define INDEX_BODY "<html><body><h1>Hello from Pico.</h1><p>Led is %s</p><p><button href=\"?led=%d\">Turn led %s</button></body><link rel=\"stylesheet\" href=\"styles.css\"></html>"
-static_assert(sizeof(INDEX_BODY) < MAX_RESPONSE_LENGTH);
-#define LED_PARAM "led=%d"
+#include "main_led_driver.h"
+
+#define INDEX_BODY_START "<html><body><h1>Hello from Hat</h1><p>Selected program is %s</p>"
+#define INDEX_BODY_END "</body><link rel=\"stylesheet\" href=\"styles.css\"><</html>"
+#define BUTTON_STRING "<p><a href=\"?led=%lu\">%s</a></p>"
+static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_LENGTH);
+#define LED_PARAM "led=%lu"
 #define INDEX_ENDPOINT "/index.html"
 #define STYLES_ENDPOINT "/styles.css"
 #define LED_GPIO 0
 
 static int test_server_content(const char *request, const char *params, char *result, size_t max_result_len);
 
-int server_init()
+static uint32_t *selectedProgram;
+
+int server_init(uint32_t *selectedProgramRef)
 {
 #ifdef WIFI_SUPPORTED
+    selectedProgram = selectedProgramRef;
     cyw43_arch_init();
 
     static TCP_SERVER_T server; // state = calloc(1, sizeof(TCP_SERVER_T));
     server.http_response_handler = test_server_content;
     TCP_SERVER_T *state = &server;
 
-    const char *ap_name = "hatpoint";
+    const char *ap_name = "wifi-hatspot";
     const char *password = "hatsarefun";
 
     cyw43_arch_enable_ap_mode(ap_name, password, CYW43_AUTH_WPA2_AES_PSK);
@@ -47,56 +54,60 @@ int server_init()
     return 0;
 }
 
-static int serve_test_server_content(const char *params, char *result, size_t max_result_len)
+void format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
 {
-    // Get the state of the led
-    bool value;
-    cyw43_gpio_get(&cyw43_state, LED_GPIO, &value);
-    int led_state = value;
-    int len = 0;
+    va_list argptr;
+    va_start(argptr, format);
+    int result = vsnprintf(*outArray_p, *max_result_len_p, format, argptr);
+    va_end(argptr);
 
+    if (result > (int)*max_result_len_p)
+    {
+        result = (int)*max_result_len_p;
+    }
+
+    *max_result_len_p -= result;
+    *outArray_p += result;
+}
+
+static int
+serve_test_server_content(const char *params, char *result, size_t max_result_len)
+{
     // See if the user changed it
     if (params)
     {
-        int led_param = sscanf(params, LED_PARAM, &led_state);
-        if (led_param == 1)
-        {
-            if (led_state)
-            {
-                // Turn led on
-                cyw43_gpio_set(&cyw43_state, LED_GPIO, true);
-            }
-            else
-            {
-                // Turn led off
-                cyw43_gpio_set(&cyw43_state, LED_GPIO, false);
-            }
-        }
-    }
-    // Generate result
-    if (led_state)
-    {
-        len = snprintf(result, max_result_len, INDEX_BODY, "ON", 0, "OFF");
-    }
-    else
-    {
-        len = snprintf(result, max_result_len, INDEX_BODY, "OFF", 1, "ON");
+        // TODO - could assert only one match
+        sscanf(params, LED_PARAM, selectedProgram);
     }
 
-    return len;
+    char const *startResult = result;
+
+    format_to_buffer(&result, &max_result_len, INDEX_BODY_START, GetProgramNames()[*selectedProgram]);
+
+    for (size_t i = 0; i < N_PROGS; i++)
+    {
+        format_to_buffer(&result, &max_result_len, BUTTON_STRING, i, GetProgramNames()[i]);
+    }
+
+    format_to_buffer(&result, &max_result_len, INDEX_BODY_END);
+
+    return result - startResult;
 }
 
 #define BG_PRIMARY "#1e1e1e"
-#define THE_CSS "body{font-family:Segoe UI;background-color:#1e1e1e;color:#d4d4d4}" \
-                "a{background-color:#4fc3f7;border:none;border-radius:8px;color:" BG_PRIMARY "";
-padding : 12px 24px;
-font - size : 16px;
-font - weight : 600;
-cursor : pointer;
-transition : all.2s ease;
-"
+#define TEXT_PRIMARY
+#define ACCENT_BLUE "#4fc3f7"
+static const char THE_CSS[] = "body{font-family:Segoe UI;background-color:" BG_PRIMARY ";color:#d4d4d4;font-size:16px}"
+                              "a{background-color:" ACCENT_BLUE ";border:none;border-radius:8px;color:" BG_PRIMARY ";"
+                              "padding: 12px 24px;}";
+//;
+// font-size : 16px;
+// font - weight : 600;
+// cursor : pointer;
+// transition : all.2s ease;
+// "
 
-    static_assert(sizeof(THE_CSS) < MAX_RESPONSE_LENGTH);
+static_assert(sizeof(THE_CSS) < MAX_RESPONSE_LENGTH);
 
 static int serve_css(const char *params, char *result, size_t max_result_len)
 {

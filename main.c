@@ -27,11 +27,13 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
+static uint32_t selectedProgram;
+
 void main_init()
 {
     dotstar_init();
     stdio_init_all();
-    server_init();
+    server_init(&selectedProgram);
     onboard_led_init();
     init_joystick();
     tusb_init();
@@ -47,9 +49,8 @@ int main()
 
     int64_t nextFrameTime = 0;
     int32_t frame = 0;
-    uint32_t incer = 0;
 
-    int debouncing = 0;
+    // int debouncing = 0;
 
     while (true)
     {
@@ -65,27 +66,27 @@ int main()
 
         if (currTime > nextFrameTime)
         {
-            enum dir_e joystick_pos = get_joystick_pos();
+            // enum dir_e joystick_pos = get_joystick_pos();
 
-            if (joystick_pos & UP)
-            {
-                if (!debouncing)
-                    incer++;
-                debouncing = 1;
-            }
-            else if (joystick_pos & DOWN)
-            {
-                if (!debouncing)
-                    incer--;
-                debouncing = 1;
-            }
-            else
-            {
-                debouncing = 0;
-            }
+            // if (joystick_pos & UP)
+            // {
+            //     if (!debouncing)
+            //         incer++;
+            //     debouncing = 1;
+            // }
+            // else if (joystick_pos & DOWN)
+            // {
+            //     if (!debouncing)
+            //         incer--;
+            //     debouncing = 1;
+            // }
+            // else
+            // {
+            //     debouncing = 0;
+            // }
 
             // dotstar_test();
-            // main_led_poll(frame, incer % N_PROGS);
+            main_led_poll(frame, selectedProgram);
             set_onboard_led(led);
 
             led = !led;

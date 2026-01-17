@@ -17,6 +17,12 @@
 
 static uint8_t MainLedChannel;
 static uint32_t MainLedBuffer[N_LEDS];
+static const char *ProgramNames[] = {"Spinning Rainbow", "Stars", "Blocks", "Text"};
+
+const char **GetProgramNames()
+{
+    return ProgramNames;
+}
 
 void main_led_init()
 {

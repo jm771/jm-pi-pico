@@ -2,22 +2,14 @@
 #include "hat_utils.h"
 #include "color.h"
 
-void bouncing_ring_produce_output(uint32_t frame, uint32_t *buffer)
+void output_ring(uint32_t frame, uint32_t *buffer, uint32_t divisor)
 {
-    blank_buffer(buffer);
+    frame /= divisor;
 
     const uint32_t Modulus = N_ROWS * 2;
     uint32_t row = frame % Modulus;
 
-    static uint32_t hue = 0;
-    if (row == N_ROWS + 1 || row == 0)
-    {
-        hue = hue + 111;
-        if (hue > 360)
-        {
-            hue -= 360;
-        }
-    }
+    uint32_t const hue = ((frame / N_ROWS) * 111) % 360;
 
     if (row > N_ROWS)
     {
@@ -26,6 +18,14 @@ void bouncing_ring_produce_output(uint32_t frame, uint32_t *buffer)
 
     for (uint32_t i = 0; i < FULL_ROW_LEN; i++)
     {
-        write_pixel(buffer, i, row, hsl2rgb(hue, 160, 100));
+        write_pixel(buffer, i, row, hsl2rgb(hue, 255, 100));
+        // write_pixel(buffer, i, N_ROWS - 1 - row, hsl2rgb(hue, 255, 100));
     }
+}
+
+void bouncing_ring_produce_output(uint32_t frame, uint32_t *buffer)
+{
+    blank_buffer(buffer);
+    output_ring(frame, buffer, 5);
+    output_ring(frame, buffer, 7);
 }

@@ -9,6 +9,8 @@
 #include "onboard_led.h"
 #include "main_led_driver.h"
 #include "server.h"
+#include "band_controler.h"
+#include "pico/cyw43_arch.h"
 // #include "pico/status_led.h"
 
 bool letsReset = false;
@@ -28,12 +30,14 @@ void tud_cdc_rx_cb(uint8_t itf)
 }
 
 static uint32_t selectedProgram = STARTING_PROGRAM;
+static band_settings_t bandSettings;
 
 void main_init()
 {
     dotstar_init();
     stdio_init_all();
-    server_init(&selectedProgram);
+    band_controller_init(&bandSettings);
+    server_init(&selectedProgram, &bandSettings);
     onboard_led_init();
     init_joystick();
     tusb_init();
@@ -50,8 +54,6 @@ int main()
     int64_t nextFrameTime = 0;
     int32_t frame = 0;
 
-    // int debouncing = 0;
-
     while (true)
     {
         tud_task();
@@ -66,35 +68,21 @@ int main()
 
         if (currTime > nextFrameTime)
         {
-            // enum dir_e joystick_pos = get_joystick_pos();
-
-            // if (joystick_pos & UP)
-            // {
-            //     if (!debouncing)
-            //         incer++;
-            //     debouncing = 1;
-            // }
-            // else if (joystick_pos & DOWN)
-            // {
-            //     if (!debouncing)
-            //         incer--;
-            //     debouncing = 1;
-            // }
-            // else
-            // {
-            //     debouncing = 0;
-            // }
-
             // dotstar_test();
             main_led_poll(frame, selectedProgram);
             set_onboard_led(led);
+            band_controller_poll(&bandSettings);
 
             led = !led;
             frame++;
 
             nextFrameTime = currTime + 20 * 1000;
 
-            printf("Processed in %llu\n", get_absolute_time() - currTime);
+            // printf("Processed in %llu\n", get_absolute_time() - currTime);
+        }
+        else
+        {
+            cyw43_arch_wait_for_work_until(make_timeout_time_ms(1));
         }
     }
 

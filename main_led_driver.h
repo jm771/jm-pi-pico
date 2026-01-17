@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define N_PROGS 7
-#define STARTING_PROGRAM 4
+#define STARTING_PROGRAM 1
 
 const char **GetProgramNames();
 

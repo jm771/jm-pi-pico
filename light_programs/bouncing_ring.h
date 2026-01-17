@@ -1,4 +1,4 @@
-#ifndef BOUNCING_RING_H
+#ifndef BOUNCING_RING_Ht
 #define BOUNCING_RING_H
 
 #include "stdint.h"

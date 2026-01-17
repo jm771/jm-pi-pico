@@ -4,12 +4,15 @@
 #endif
 
 #include "main_led_driver.h"
+#include "band_controler.h"
 
 #define INDEX_BODY_START "<html><body><h1>Hello from Hat</h1><p>Selected program is %s</p>"
 #define INDEX_BODY_END "</body><link rel=\"stylesheet\" href=\"styles.css\"></html>"
 #define BUTTON_STRING "<p><a href=\"?led=%lu\">%s</a></p>"
+#define BAND_STRING "<p><a href=\"?%s=%lu\">%s</a></p>"
 static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_LENGTH);
 #define LED_PARAM "led=%lu"
+#define RED_BAND_PARAM "red=%lu"
 #define INDEX_ENDPOINT "/index.html"
 #define STYLES_ENDPOINT "/styles.css"
 #define LED_GPIO 0
@@ -17,11 +20,14 @@ static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_L
 static int test_server_content(const char *request, const char *params, char *result, size_t max_result_len);
 
 static uint32_t *selectedProgram;
+static band_settings_t *bandSettings;
 
-int server_init(uint32_t *selectedProgramRef)
+int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
 {
-#ifdef WIFI_SUPPORTED
     selectedProgram = selectedProgramRef;
+    bandSettings = bandSettingsRef;
+#ifdef WIFI_SUPPORTED
+
     cyw43_arch_init();
 
     static TCP_SERVER_T server; // state = calloc(1, sizeof(TCP_SERVER_T));
@@ -78,6 +84,13 @@ serve_test_server_content(const char *params, char *result, size_t max_result_le
     {
         // TODO - could assert only one match
         sscanf(params, LED_PARAM, selectedProgram);
+        // printf("selects %lu", *selectedProgram);
+        uint32_t redParam;
+        if (sscanf(params, RED_BAND_PARAM, &redParam) == 1)
+        {
+            bandSettings->red = redParam;
+        }
+        printf("red %hhu\n", bandSettings->red);
     }
 
     char const *startResult = result;
@@ -89,7 +102,10 @@ serve_test_server_content(const char *params, char *result, size_t max_result_le
         format_to_buffer(&result, &max_result_len, BUTTON_STRING, i, GetProgramNames()[i]);
     }
 
+    format_to_buffer(&result, &max_result_len, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
+
     format_to_buffer(&result, &max_result_len, INDEX_BODY_END);
+    (void)bandSettings;
 
     return result - startResult;
 }
@@ -97,7 +113,7 @@ serve_test_server_content(const char *params, char *result, size_t max_result_le
 #define BG_PRIMARY "#1e1e1e"
 #define TEXT_PRIMARY
 #define ACCENT_BLUE "#4fc3f7"
-static const char THE_CSS[] = "body{font-family:Segoe UI;background-color:" BG_PRIMARY ";color:#d4d4d4;font-size:16px}"
+static const char THE_CSS[] = "body{font-family:Segoe UI;background-color:" BG_PRIMARY ";color:#d4d4d4;font-size:24px}"
                               "a{background-color:" ACCENT_BLUE ";border:none;border-radius:8px;color:" BG_PRIMARY ";"
                               "padding: 12px 24px;}";
 //;

@@ -60,6 +60,10 @@ void run_selected_program(uint32_t frame, uint32_t program_number, uint32_t *buf
         return mama_lauda_produce_output(frame, buffer);
     case 4:
         return gradient_flow_produce_output(frame, buffer);
+    case 5:
+        return bouncing_ring_produce_output(frame, buffer);
+    case 6:
+        return tempus_fulvum_produce_output(frame, buffer);
     }
 }
 

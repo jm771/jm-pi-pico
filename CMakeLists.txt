@@ -41,7 +41,7 @@ target_include_directories(${project_name} PRIVATE
 		 ${CMAKE_CURRENT_LIST_DIR}/server
 		  ${CMAKE_CURRENT_LIST_DIR}/light_programs
 )
-
+ 
 # todo - want -pedantic
 target_compile_options(${project_name} PRIVATE -Wall -Wextra -Werror -Wno-error=unused-parameter)
 

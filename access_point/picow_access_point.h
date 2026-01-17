@@ -11,7 +11,7 @@
 #include "dnsserver.h"
 
 #define DEBUG_printf printf
-#define MAX_RESPONSE_LENGTH 1024
+#define MAX_RESPONSE_LENGTH 4096
 
 typedef struct TCP_SERVER_T_
 {

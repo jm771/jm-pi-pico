@@ -12,7 +12,7 @@ uint32_t f(int32_t n, int32_t h, int32_t l, int32_t a)
     int32_t inner_min = MIN((k - 3 * COLOR_ONE), (9 * COLOR_ONE - k));
     int32_t outer_max = MAX(MIN(inner_min, COLOR_ONE), -COLOR_ONE);
     int32_t result = l - (a * outer_max) / COLOR_ONE;
-    return MIN(result / COLOR_ONE, COLOR_MAX);
+    return MIN(result, COLOR_MAX);
 }
 
 // input: h as an angle in [0,360] and s,l in [0,256] - output: r,g,b in [0,256]

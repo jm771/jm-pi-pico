@@ -27,7 +27,7 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
-static uint32_t selectedProgram;
+static uint32_t selectedProgram = STARTING_PROGRAM;
 
 void main_init()
 {

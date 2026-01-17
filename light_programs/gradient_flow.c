@@ -11,7 +11,7 @@ void gradient_flow_produce_output(uint32_t frame, uint32_t *buffer)
     {
         for (uint32_t j = 0; j < FULL_ROW_LEN; j++)
         {
-            uint32_t val = hsl2rgb((i * 2 * N_ROWS + j + frame) % 360, 256, 128);
+            uint32_t val = hsl2rgb((i * 2 * N_ROWS + j * 2 + frame) % 360, 256, 128);
             printf("%lx\n", val);
             write_pixel(buffer, j, i, val);
         }

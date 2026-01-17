@@ -33,7 +33,7 @@ uint32_t pixel_len(char const *string)
     uint32_t ret = 0;
     for (char const *c = string; *c != '\0'; c++)
     {
-        ret += MARGIN + get_8pt_width(*c);
+        ret += MARGIN + get_6pt_width(*c);
     }
 
     return ret;
@@ -49,7 +49,7 @@ void write_string(unsigned int frame, char const *string, uint32_t *buffer)
 
     for (char const *c = string; *c != '\0'; c++)
     {
-        uint32_t const char_width = get_8pt_width(*c);
+        uint32_t const char_width = get_6pt_width(*c);
 
         if ((int32_t)pixel_in_string >= scroll_offset + PRETEND_WIDTH)
         {
@@ -58,10 +58,10 @@ void write_string(unsigned int frame, char const *string, uint32_t *buffer)
 
         if ((int32_t)(pixel_in_string + char_width) >= scroll_offset)
         {
-            write_char_8pt(buffer, *c, 0xff << 8 * (char_in_str % 3), pixel_in_string - scroll_offset);
+            write_char_6pt(buffer, *c, 0xff << 8 * (char_in_str % 3), pixel_in_string - scroll_offset);
         }
 
-        pixel_in_string += MARGIN + get_8pt_width(*c);
+        pixel_in_string += MARGIN + get_6pt_width(*c);
         char_in_str++;
     }
 }
@@ -71,7 +71,7 @@ void mama_lauda_produce_output(unsigned int frame, uint32_t *buffer)
     // (void)frame;
     blank_buffer(buffer);
 
-    write_string(frame / 10, "merry", buffer);
+    write_string(frame / 10, "mama lauda", buffer);
 }
 
 // uint32_t offset = FULL_ROW_LEN - (frame / 20) % FULL_ROW_LEN;

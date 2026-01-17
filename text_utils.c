@@ -58,65 +58,96 @@ char *get_4pt_char(char character)
     }
 }
 
-uint32_t get_8pt_width(char character)
+uint32_t get_6pt_width(char character)
 {
     switch (character)
     {
+    case 'a':
+        return 3;
+    case 'd':
+        return 3;
     case 'e':
+        return 4;
+    case 'l':
         return 4;
     case 'm':
         return 5;
     case 'r':
         return 4;
+    case 'u':
+        return 3;
     case 'y':
+        return 3;
+    case ' ':
         return 3;
     default:
         return 4;
     }
 }
 
-char *get_8pt_char(char character)
+char *get_6pt_char(char character)
 {
     switch (character)
     {
     case 'a':
+        return "###\n"
+               "# #\n"
+               "# #\n"
+               "###\n"
+               "# #\n"
+               "# #\n";
+    case 'd':
+        return "##\n"
+               "# #\n"
+               "# #\n"
+               "# #\n"
+               "# #\n"
+               "##\n";
 
     case 'e':
-        return "\n"
-               "\n"
-               "####\n"
+        return "####\n"
                "#\n"
                "####\n"
                "#\n"
                "#\n"
                "####\n";
+    case 'l':
+        return "#\n"
+               "#\n"
+               "#\n"
+               "#\n"
+               "#\n"
+               "####\n";
     case 'm':
-        return "\n"
-               "\n"
-               "#####\n"
+        return "#####\n"
                "#####\n"
                "# # #\n"
                "# # #\n"
                "# # #\n"
                "# # #\n";
     case 'r':
-        return "\n"
-               "\n"
-               "###\n"
+        return "###\n"
                "# #\n"
                "###\n"
                "# #\n"
                "# ##\n"
                "#  #\n";
-    case 'y':
-        return "\n"
-               "\n"
+    case 'u':
+        return "# #\n"
                "# #\n"
+               "# #\n"
+               "# #\n"
+               "# #\n"
+               "###\n";
+    case 'y':
+        return "# #\n"
                "# #\n"
                "###\n"
                " #\n"
                " #\n"
                " #\n";
+    case ' ':
+        return "";
     default:
         return "####\n"
                "####\n"
@@ -169,8 +200,8 @@ uint32_t write_char_4pt(uint32_t *buffer, char character, uint32_t color, int32_
     return width;
 }
 
-void write_char_8pt(uint32_t *buffer, char character, uint32_t color, int32_t x_off)
+void write_char_6pt(uint32_t *buffer, char character, uint32_t color, int32_t x_off)
 {
-    write_character(buffer, get_8pt_char(character), color, x_off, 7);
+    write_character(buffer, get_6pt_char(character), color, x_off, 5);
     // return get_8pt_width(character);
 }

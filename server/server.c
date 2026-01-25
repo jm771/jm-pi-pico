@@ -16,6 +16,9 @@ static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_L
 #define INDEX_ENDPOINT "/index.html"
 #define STYLES_ENDPOINT "/styles.css"
 #define LED_GPIO 0
+#define FORM_BEGIN "<form action=\"/submit\" method=\"get\">"
+#define FORM_RED "<label>Red:<input type=\"range\" name=\"gain\" min=\"0\" max=\"10\" value=\"5\"></label><output></output>"
+#define FORM_END "<br><br><button>Submit</button></form>"
 
 static int test_server_content(const char *request, const char *params, char *result, size_t max_result_len);
 
@@ -105,6 +108,11 @@ serve_test_server_content(const char *params, char *result, size_t max_result_le
     format_to_buffer(&result, &max_result_len, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
 
     format_to_buffer(&result, &max_result_len, INDEX_BODY_END);
+
+    format_to_buffer(&result, &max_result_len, FORM_BEGIN);
+    format_to_buffer(&result, &max_result_len, FORM_RED);
+    format_to_buffer(&result, &max_result_len, FORM_END);
+
     (void)bandSettings;
 
     return result - startResult;

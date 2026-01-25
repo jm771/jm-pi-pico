@@ -11,6 +11,7 @@
 #include "server.h"
 #include "band_controler.h"
 #include "pico/cyw43_arch.h"
+#include "pwm.h"
 // #include "pico/status_led.h"
 
 bool letsReset = false;
@@ -34,6 +35,7 @@ static band_settings_t bandSettings;
 
 void main_init()
 {
+    pwm_install_program();
     dotstar_init();
     stdio_init_all();
     band_controller_init(&bandSettings);
@@ -71,6 +73,7 @@ int main()
             // dotstar_test();
             main_led_poll(frame, selectedProgram);
             set_onboard_led(led);
+            bandSettings.red = (bandSettings.red + 1) % 256;
             band_controller_poll(&bandSettings);
 
             led = !led;

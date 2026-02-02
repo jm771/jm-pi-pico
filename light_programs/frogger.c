@@ -27,6 +27,11 @@ static bool hasWon;
 
 static car_pos_t car_positions[3];
 
+#define CAR_COLOR 0x0000FF
+#define FROG_COLOR 0x00FF00
+#define WIN_COLOR 0x00FF00
+#define DEAD_COLOR 0xFF0000
+
 // void WrapPos(frog_pos_t *pos)
 // {
 // }
@@ -36,19 +41,20 @@ void frogger_init()
 {
     FrogPos.x = 0;
     FrogPos.y = 0;
-    for (int i = 0; i < 3; i++) {
-        car_positions[i].x = i*2 + 2;
+    for (int i = 0; i < 3; i++)
+    {
+        car_positions[i].x = i * 2 + 2;
         car_positions[i].y = N_FULL_ROWS - 1;
         car_positions[i].resetTimer = 0;
     }
     car_positions[0].moveOnFrame = 10;
     car_positions[1].moveOnFrame = 5;
-    car_positions[2].moveOnFrame = 15; 
+    car_positions[2].moveOnFrame = 15;
     hasLost = false;
     hasWon = false;
 }
 
-void set_hat_full_color(uint32_t* buffer, uint32_t color)
+void set_hat_full_color(uint32_t *buffer, uint32_t color)
 {
     blank_buffer(buffer);
     for (int i = 0; i < FULL_ROW_LEN; i++)
@@ -57,13 +63,14 @@ void set_hat_full_color(uint32_t* buffer, uint32_t color)
 }
 
 // returns true if a car has hit the frog
-bool car_logic(car_pos_t *car, frog_pos_t* frog, uint32_t frame, uint32_t *buffer)
+bool car_logic(car_pos_t *car, frog_pos_t *frog, uint32_t frame, uint32_t *buffer)
 {
-    if (car->x == frog->x && car->y == frog->y && car->resetTimer == 0) {
+    if (car->x == frog->x && car->y == frog->y && car->resetTimer == 0)
+    {
         hasLost = true;
         return true;
     }
-    
+
     if (car->resetTimer > 0)
     {
         car->resetTimer--;
@@ -77,7 +84,7 @@ bool car_logic(car_pos_t *car, frog_pos_t* frog, uint32_t frame, uint32_t *buffe
 
         if (car->y >= 0)
         {
-            write_pixel(buffer, car->x, car->y, 0xFF0000);
+            write_pixel(buffer, car->x, car->y, CAR_COLOR);
         }
         else
         {
@@ -94,34 +101,37 @@ bool car_logic(car_pos_t *car, frog_pos_t* frog, uint32_t frame, uint32_t *buffe
 // This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)
 void frogger_produce_output(uint32_t frame, uint32_t *buffer)
 {
-    if (hasLost) {
-        set_hat_full_color(buffer, 0xFF0000);
+    if (hasLost)
+    {
+        set_hat_full_color(buffer, DEAD_COLOR);
         return;
     }
-    
+
     blank_buffer(buffer);
 
     if (hasWon)
     {
-        set_hat_full_color(buffer, 0x00FF00);
+        set_hat_full_color(buffer, WIN_COLOR);
     }
     else
     {
-        for (int i = 0; i < 3; i++) {
-            if (car_logic(&car_positions[i], &FrogPos, frame, buffer)) {
-                set_hat_full_color(buffer, 0xFF0000);
+        for (int i = 0; i < 3; i++)
+        {
+            if (car_logic(&car_positions[i], &FrogPos, frame, buffer))
+            {
+                set_hat_full_color(buffer, DEAD_COLOR);
                 return;
             }
         }
 
         // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
         // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
-        write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
+        write_pixel(buffer, FrogPos.x, FrogPos.y, FROG_COLOR);
 
         // victory zone
         for (int i = 0; i < N_FULL_ROWS; i++)
         {
-            write_pixel(buffer, FULL_ROW_LEN - 1, i, 0x00FF00);
+            write_pixel(buffer, FULL_ROW_LEN - 1, i, WIN_COLOR);
         }
     }
 }

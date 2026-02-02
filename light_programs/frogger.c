@@ -37,6 +37,7 @@ void frogger_init()
     FrogPos.y = 0;
     Car1Pos.x = 2;
     Car1Pos.y = N_FULL_ROWS - 1;
+    Car1Pos.resetTimer = 0;
 }
 
 // This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)

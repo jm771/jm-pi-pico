@@ -3,6 +3,7 @@
 #include "picow_access_point.h"
 #endif
 
+#include <stddef.h>
 #include "main_led_driver.h"
 #include "band_controler.h"
 
@@ -10,7 +11,9 @@
 #define INDEX_BODY_END "</body><link rel=\"stylesheet\" href=\"styles.css\"></html>"
 #define BUTTON_STRING "<p><a href=\"?led=%lu\">%s</a></p>"
 #define BAND_STRING "<p><a href=\"?%s=%lu\">%s</a></p>"
+#ifdef WIFI_SUPPORTED
 static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_LENGTH);
+#endif
 #define LED_PARAM "led=%lu"
 #define RED_BAND_PARAM "red=%lu"
 #define INDEX_ENDPOINT "/index.html"
@@ -20,7 +23,9 @@ static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_L
 #define FORM_RED "<label>Red:<input type=\"range\" name=\"gain\" min=\"0\" max=\"10\" value=\"5\"></label><output></output>"
 #define FORM_END "<br><br><button>Submit</button></form>"
 
+#ifdef WIFI_SUPPORTED
 static int test_server_content(const char *request, const char *params, char *result, size_t max_result_len);
+#endif
 
 static uint32_t *selectedProgram;
 static band_settings_t *bandSettings;
@@ -63,6 +68,7 @@ int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
     return 0;
 }
 
+#ifdef WIFI_SUPPORTED
 void format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
 {
     va_list argptr;
@@ -154,6 +160,8 @@ static int test_server_content(const char *request, const char *params, char *re
 
     return 0;
 }
+
+#endif
 
 void server_poll()
 {

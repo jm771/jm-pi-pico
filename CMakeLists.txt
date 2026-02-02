@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.13...3.27)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Comment this out to go back to prev board
-set(PICO_BOARD pico2_w)
+# set(PICO_BOARD pico2_w)
 # TODO - thought this was a property of pico board... guess should do it by hand or sth
 # set(PICO_BOARD pico2)
 

@@ -10,7 +10,14 @@
 #include "main_led_driver.h"
 #include "server.h"
 #include "band_controler.h"
+
+#ifdef WIFI_SUPPORTED
 #include "pico/cyw43_arch.h"
+#else
+
+// void cyw43_arch_wait_for_work_until()
+
+#endif
 #include "frogger.h"
 #include "pwm.h"
 // #include "pico/status_led.h"
@@ -93,7 +100,7 @@ int main()
         }
         else
         {
-            cyw43_arch_wait_for_work_until(make_timeout_time_ms(1));
+            // cyw43_arch_wait_for_work_until(make_timeout_time_ms(1));
         }
     }
 

@@ -3,13 +3,17 @@
 #include "pico/types.h"
 #include "string.h"
 #include <stdio.h>
+#include <stdlib.h>
 // N.B. WS2812 protocol requires ~1.25us per bit, we have 24 bits per LED and 200 LEDs so that's 6ms per frame minimum
 // I'm not sure what'll happen if we retrigger DMA send between frames, I suspect "tearing" of some sort.
+
+#define NUM_CARS 8
 
 typedef struct
 {
     int32_t x;
     int32_t y;
+    int32_t splatFrame;
 } frog_pos_t;
 
 typedef struct
@@ -25,7 +29,7 @@ static bool hasLost = false;
 static frog_pos_t FrogPos;
 static bool hasWon;
 
-static car_pos_t car_positions[3];
+static car_pos_t car_positions[NUM_CARS];
 
 #define CAR_COLOR 0x0000FF
 #define FROG_COLOR 0x00FF00
@@ -41,20 +45,38 @@ void frogger_init()
 {
     FrogPos.x = 0;
     FrogPos.y = 0;
-    for (int i = 0; i < 3; i++)
-    {
-        car_positions[i].x = i * 2 + 2;
+    FrogPos.splatFrame = 0;
+    for (int i = 0; i < NUM_CARS; i++) {
+        car_positions[i].x = i*2 + 2;
         car_positions[i].y = N_FULL_ROWS - 1;
         car_positions[i].resetTimer = 0;
     }
     car_positions[0].moveOnFrame = 10;
-    car_positions[1].moveOnFrame = 5;
-    car_positions[2].moveOnFrame = 15;
+    for (int i = 1; i < NUM_CARS; i++) {
+        int increment = rand() % 3;
+        if (i % 2 == 0) {
+            car_positions[i].moveOnFrame = 18 - increment;
+        } else {
+            car_positions[i].moveOnFrame = 5 + increment;
+        }   
+    }
     hasLost = false;
     hasWon = false;
 }
 
-void set_hat_full_color(uint32_t *buffer, uint32_t color)
+void display_splat(uint32_t* buffer, frog_pos_t* frog)
+{
+    blank_buffer(buffer);
+    if (frog->splatFrame > 0 && frog->splatFrame < 5) {
+        write_pixel(buffer, frog->x + frog->splatFrame, frog->y, 0xFF0000);
+        write_pixel(buffer, frog->x, frog->y + frog->splatFrame, 0xFF0000);
+        write_pixel(buffer, frog->x - frog->splatFrame, frog->y, 0xFF0000);
+        write_pixel(buffer, frog->x, frog->y - frog->splatFrame, 0xFF0000);
+    }
+    frog->splatFrame += 1;
+}
+
+void set_hat_full_color(uint32_t* buffer, uint32_t color)
 {
     blank_buffer(buffer);
     for (int i = 0; i < FULL_ROW_LEN; i++)
@@ -101,9 +123,11 @@ bool car_logic(car_pos_t *car, frog_pos_t *frog, uint32_t frame, uint32_t *buffe
 // This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)
 void frogger_produce_output(uint32_t frame, uint32_t *buffer)
 {
-    if (hasLost)
-    {
-        set_hat_full_color(buffer, DEAD_COLOR);
+    srand(42);
+
+    if (hasLost) {
+        //set_hat_full_color(buffer, 0xFF0000);
+        display_splat(buffer, &FrogPos);
         return;
     }
 
@@ -115,11 +139,9 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
     }
     else
     {
-        for (int i = 0; i < 3; i++)
-        {
-            if (car_logic(&car_positions[i], &FrogPos, frame, buffer))
-            {
-                set_hat_full_color(buffer, DEAD_COLOR);
+        for (int i = 0; i < NUM_CARS; i++) {
+            if (car_logic(&car_positions[i], &FrogPos, frame, buffer)) {
+                //set_hat_full_color(buffer, 0xFF0000);
                 return;
             }
         }

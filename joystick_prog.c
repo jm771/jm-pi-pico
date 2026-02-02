@@ -12,7 +12,7 @@ void joystick_prog_produce_output(unsigned int frame, uint32_t *buffer, uint32_t
     static uint32_t l = 0;
     static uint32_t u = 0;
 
-    enum dir_e joystick_pos = get_joystick_pos();
+    dir_t joystick_pos = get_joystick_pos();
 
     if (joystick_pos & UP)
     {

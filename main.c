@@ -42,6 +42,10 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
+void handle_joystick_events()
+{
+}
+
 static uint32_t selectedProgram = STARTING_PROGRAM;
 static band_settings_t bandSettings;
 

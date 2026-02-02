@@ -30,8 +30,12 @@ static frog_pos_t FrogPos;
 #define FROG_COLOR 0x00FF00
 #define WIN_COLOR 0x00FF00
 #define DEAD_COLOR 0xFF0000
+#define FROG_SPRITE_X 11
+#define FROG_SPRITE_Y 7
 
 static car_pos_t car_positions[NUM_CARS];
+
+static uint32_t frog_sprite[FROG_SPRITE_X][FROG_SPRITE_Y];
 
 // Run once on reboot
 void frogger_init()
@@ -72,7 +76,47 @@ void display_splat(uint32_t *buffer, frog_pos_t *frog, uint32_t animationFrame)
     }
 }
 
-void set_hat_full_color(uint32_t *buffer, uint32_t color)
+void render_sprite(uint32_t* buffer)
+{
+    for (int x = 0; x < FROG_SPRITE_X; x++)
+        for (int y = 0; y < FROG_SPRITE_Y; y++)\
+            write_pixel(buffer, x, y, frog_sprite[x][y]);
+}
+
+void fill_frog_sprite()
+{
+    // hind legs
+    for (int x = 0; x < 1; x++)
+        for (int y = 0; y < N_FULL_ROWS; y++)
+            frog_sprite[x][y] = 0x00FF00;
+    // body
+    for (int x = 1; x < 3; x++)
+        for (int y = 1; y < N_FULL_ROWS - 1; y++)
+            frog_sprite[x][y] = 0x00FF00;
+    // head
+    for (int x = 3; x < 6; x++)
+        for (int y = 2; y < N_FULL_ROWS - 2; y++)
+            frog_sprite[x][y] = 0x00FF00;
+    frog_sprite[4][2] = 0xFFFFFF;
+    frog_sprite[4][N_FULL_ROWS - 2] = 0xFFFFFF;
+}
+
+
+void display_victory(uint32_t* buffer, int32_t animationFrame)
+{
+    blank_buffer(buffer);
+    if (animationFrame > 0) {
+        fill_frog_sprite();
+        int tongueLength = animationFrame >= 5 ? 4 : animationFrame;
+        // stick out the frog's tongue
+        for (int x = 6; x < 6 + tongueLength; x++) {
+            frog_sprite[x][3] = 0xFF0000;
+        }
+        render_sprite(buffer);
+    }
+}
+
+void set_hat_full_color(uint32_t* buffer, uint32_t color)
 {
     blank_buffer(buffer);
     for (int i = 0; i < FULL_ROW_LEN; i++)
@@ -128,7 +172,8 @@ bool handleLossVictory(uint32_t frame, uint32_t *buffer)
     }
     else if (GameState.hasWon)
     {
-        set_hat_full_color(buffer, WIN_COLOR);
+        display_victory(buffer, frame - GameState.gameEndFrame);
+        //set_hat_full_color(buffer, WIN_COLOR);
         ret = true;
     }
 

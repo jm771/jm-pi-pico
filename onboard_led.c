@@ -3,12 +3,12 @@
 
 void onboard_led_init()
 {
-    gpio_init(19);
-    gpio_set_dir(19, GPIO_OUT);
-    gpio_init(20);
-    gpio_set_dir(20, GPIO_OUT);
-    gpio_init(21);
-    gpio_set_dir(21, GPIO_OUT);
+    // gpio_init(19);
+    // gpio_set_dir(19, GPIO_OUT);
+    // gpio_init(20);
+    // gpio_set_dir(20, GPIO_OUT);
+    // gpio_init(21);
+    // gpio_set_dir(21, GPIO_OUT);
 
     // only defined on pico 1
     // #ifdef PICO_DEFAULT_LED_PIN

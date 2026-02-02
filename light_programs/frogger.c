@@ -7,8 +7,6 @@
 // N.B. WS2812 protocol requires ~1.25us per bit, we have 24 bits per LED and 200 LEDs so that's 6ms per frame minimum
 // I'm not sure what'll happen if we retrigger DMA send between frames, I suspect "tearing" of some sort.
 
-#define NUM_CARS 8
-
 typedef struct
 {
     int32_t x;
@@ -31,6 +29,7 @@ static bool hasWon;
 
 static car_pos_t car_positions[NUM_CARS];
 
+#define NUM_CARS 8
 #define CAR_COLOR 0x0000FF
 #define FROG_COLOR 0x00FF00
 #define WIN_COLOR 0x00FF00
@@ -68,10 +67,10 @@ void display_splat(uint32_t* buffer, frog_pos_t* frog)
 {
     blank_buffer(buffer);
     if (frog->splatFrame > 0 && frog->splatFrame < 5) {
-        write_pixel(buffer, frog->x + frog->splatFrame, frog->y, 0xFF0000);
-        write_pixel(buffer, frog->x, frog->y + frog->splatFrame, 0xFF0000);
-        write_pixel(buffer, frog->x - frog->splatFrame, frog->y, 0xFF0000);
-        write_pixel(buffer, frog->x, frog->y - frog->splatFrame, 0xFF0000);
+        write_pixel(buffer, frog->x + frog->splatFrame, frog->y, DEAD_COLOR);
+        write_pixel(buffer, frog->x, frog->y + frog->splatFrame, DEAD_COLOR);
+        write_pixel(buffer, frog->x - frog->splatFrame, frog->y, DEAD_COLOR);
+        write_pixel(buffer, frog->x, frog->y - frog->splatFrame, DEAD_COLOR);
     }
     frog->splatFrame += 1;
 }
@@ -126,7 +125,7 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
     srand(42);
 
     if (hasLost) {
-        //set_hat_full_color(buffer, 0xFF0000);
+        //set_hat_full_color(buffer, DEAD_COLOR);
         display_splat(buffer, &FrogPos);
         return;
     }
@@ -141,7 +140,7 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
     {
         for (int i = 0; i < NUM_CARS; i++) {
             if (car_logic(&car_positions[i], &FrogPos, frame, buffer)) {
-                //set_hat_full_color(buffer, 0xFF0000);
+                //set_hat_full_color(buffer, DEAD_COLOR);
                 return;
             }
         }

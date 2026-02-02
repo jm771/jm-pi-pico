@@ -94,8 +94,17 @@ void display_splat(uint32_t *buffer, frog_pos_t *frog, uint32_t animationFrame)
 void render_sprite(uint32_t *buffer)
 {
     for (int x = 0; x < FROG_SPRITE_X; x++)
+    {
         for (int y = 0; y < FROG_SPRITE_Y; y++)
-            write_pixel(buffer, x, y, frog_sprite[x][y]);
+        {
+            int x_coord = x - 9; // move the sprite to the right so the non-hat wearer can see it
+            if (x_coord < 0)
+            {
+                x_coord += FULL_ROW_LEN;
+            }
+            write_pixel(buffer, x_coord, y, frog_sprite[x][y]);
+        }
+    }
 }
 
 void fill_frog_sprite()

@@ -27,13 +27,13 @@ static bool hasLost = false;
 static frog_pos_t FrogPos;
 static bool hasWon;
 
-static car_pos_t car_positions[NUM_CARS];
-
 #define NUM_CARS 8
 #define CAR_COLOR 0x0000FF
 #define FROG_COLOR 0x00FF00
 #define WIN_COLOR 0x00FF00
 #define DEAD_COLOR 0xFF0000
+
+static car_pos_t car_positions[NUM_CARS];
 
 // void WrapPos(frog_pos_t *pos)
 // {

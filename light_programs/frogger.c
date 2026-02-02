@@ -22,18 +22,27 @@ typedef struct
     int32_t moveOnFrame;
 } car_pos_t;
 
+typedef struct
+{
+    int32_t x;
+    int32_t orientation;
+} gate_t;
+
 static game_state_t GameState;
 static frog_pos_t FrogPos;
 
 #define NUM_CARS 8
+#define NUM_GATES 9
 #define CAR_COLOR 0x0000FF
 #define FROG_COLOR 0x00FF00
 #define WIN_COLOR 0x00FF00
 #define DEAD_COLOR 0xFF0000
 #define FROG_SPRITE_X 11
 #define FROG_SPRITE_Y 7
+#define GATE_INTERVAL 4
 
 static car_pos_t car_positions[NUM_CARS];
+static gate_t gates[NUM_GATES];
 
 static uint32_t frog_sprite[FROG_SPRITE_X][FROG_SPRITE_Y];
 
@@ -42,7 +51,7 @@ void frogger_init()
 {
     game_state_init(&GameState);
     FrogPos.x = 0;
-    FrogPos.y = 0;
+    FrogPos.y = 3;
     for (int i = 0; i < NUM_CARS; i++)
     {
         car_positions[i].x = i * 2 + 2;
@@ -62,6 +71,12 @@ void frogger_init()
             car_positions[i].moveOnFrame = 5 + increment;
         }
     }
+
+    for (int i = 0; i < NUM_GATES; i++)
+    {
+        gates[i].x = i * 2 + 1;
+        gates[i].orientation = (i % 2) * 2 - 1;
+    }
 }
 
 void display_splat(uint32_t *buffer, frog_pos_t *frog, uint32_t animationFrame)
@@ -76,10 +91,10 @@ void display_splat(uint32_t *buffer, frog_pos_t *frog, uint32_t animationFrame)
     }
 }
 
-void render_sprite(uint32_t* buffer)
+void render_sprite(uint32_t *buffer)
 {
     for (int x = 0; x < FROG_SPRITE_X; x++)
-        for (int y = 0; y < FROG_SPRITE_Y; y++)\
+        for (int y = 0; y < FROG_SPRITE_Y; y++)
             write_pixel(buffer, x, y, frog_sprite[x][y]);
 }
 
@@ -101,22 +116,23 @@ void fill_frog_sprite()
     frog_sprite[4][N_FULL_ROWS - 2] = 0xFFFFFF;
 }
 
-
-void display_victory(uint32_t* buffer, int32_t animationFrame)
+void display_victory(uint32_t *buffer, int32_t animationFrame)
 {
     blank_buffer(buffer);
-    if (animationFrame > 0) {
+    if (animationFrame > 0)
+    {
         fill_frog_sprite();
         int tongueLength = animationFrame >= 5 ? 4 : animationFrame;
         // stick out the frog's tongue
-        for (int x = 6; x < 6 + tongueLength; x++) {
+        for (int x = 6; x < 6 + tongueLength; x++)
+        {
             frog_sprite[x][3] = 0xFF0000;
         }
         render_sprite(buffer);
     }
 }
 
-void set_hat_full_color(uint32_t* buffer, uint32_t color)
+void set_hat_full_color(uint32_t *buffer, uint32_t color)
 {
     blank_buffer(buffer);
     for (int i = 0; i < FULL_ROW_LEN; i++)
@@ -157,6 +173,24 @@ void car_logic(car_pos_t *car, frog_pos_t *frog, uint32_t frame, uint32_t *buffe
     printf("%li %li\n", car->y, car->resetTimer);
 }
 
+void gate_logic(gate_t *gate, frog_pos_t *frog, uint32_t frame, uint32_t *buffer)
+{
+    uint32_t downFrame = frame / 16;
+    int32_t gateY = ((downFrame * gate->orientation) + GATE_INTERVAL) % GATE_INTERVAL;
+
+    if (frog->x == gate->x)
+    {
+        if (frog->y % GATE_INTERVAL == gateY)
+        {
+            triggerLoss(&GameState, frame);
+        }
+    }
+    for (int i = 0; i * GATE_INTERVAL + gateY < N_ROWS; i++)
+    {
+        write_pixel(buffer, gate->x, i * GATE_INTERVAL + gateY, 0xFFFF00);
+    }
+}
+
 bool handleLossVictory(uint32_t frame, uint32_t *buffer)
 {
     if (!GameState.hasWon && FrogPos.x >= FULL_ROW_LEN - 1)
@@ -173,7 +207,7 @@ bool handleLossVictory(uint32_t frame, uint32_t *buffer)
     else if (GameState.hasWon)
     {
         display_victory(buffer, frame - GameState.gameEndFrame);
-        //set_hat_full_color(buffer, WIN_COLOR);
+        // set_hat_full_color(buffer, WIN_COLOR);
         ret = true;
     }
 
@@ -196,6 +230,10 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
         for (int i = 0; i < NUM_CARS; i++)
         {
             car_logic(&car_positions[i], &FrogPos, frame, buffer);
+        }
+        for (size_t i = 0; i < NUM_GATES; i++)
+        {
+            gate_logic(&gates[i], &FrogPos, frame, buffer);
         }
 
         // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED

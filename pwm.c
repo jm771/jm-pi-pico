@@ -48,7 +48,7 @@ uint pwm_init(uint pin)
 
 void pwm_set_level(uint sm, uint32_t level)
 {
-    printf("%lu\n", level);
+    // printf("%lu\n", level);
     // pio_pwm_set_level(pio, sm, (1u << 16) - 1);
     pio_pwm_set_level(pio, sm, level << 6);
 }

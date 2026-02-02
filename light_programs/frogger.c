@@ -12,6 +12,9 @@ typedef struct
 } frog_pos_t;
 
 static frog_pos_t FrogPos;
+static frog_pos_t Car1Pos;
+static frog_pos_t Car2Pos;
+static frog_pos_t Car3Pos;
 static bool hasWon;
 
 // void WrapPos(frog_pos_t *pos)
@@ -52,7 +55,7 @@ void frogger_accept_keypress(char c)
     {
     case 'w':
     {
-        if (FrogPos.y < N_ROWS)
+        if (FrogPos.y < N_ROWS - 1)
         {
             FrogPos.y++;
         }

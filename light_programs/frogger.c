@@ -31,7 +31,7 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
     blank_buffer(buffer);
 
     if (hasWon) {
-        memset(buffer, 0x00FF00, sizeof(uint32_t) * N_LEDS);
+        memset(buffer, 0xFF, sizeof(uint32_t) * N_LEDS);
     } else {
         // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
         // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
@@ -52,10 +52,9 @@ void frogger_accept_keypress(char c)
     {
     case 'w':
     {
-        FrogPos.y++;
-        if (FrogPos.y >= N_ROWS)
+        if (FrogPos.y < N_ROWS)
         {
-            FrogPos.y -= N_ROWS;
+            FrogPos.y++;
         }
         break;
     }

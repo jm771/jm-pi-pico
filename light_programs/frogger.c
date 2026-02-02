@@ -11,7 +11,19 @@ typedef struct
     int32_t y;
 } frog_pos_t;
 
+typedef struct
+{
+    int32_t x;
+    int32_t y;
+    int32_t resetTimer;
+} car_pos_t;
+
+static int32_t carsTimer = 0;
+
 static frog_pos_t FrogPos;
+static car_pos_t Car1Pos;
+static car_pos_t Car2Pos;
+static car_pos_t Car3Pos;
 static bool hasWon;
 
 // void WrapPos(frog_pos_t *pos)
@@ -23,6 +35,8 @@ void frogger_init()
 {
     FrogPos.x = 0;
     FrogPos.y = 0;
+    Car1Pos.x = 2;
+    Car1Pos.y = N_FULL_ROWS - 1;
 }
 
 // This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)
@@ -36,6 +50,21 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
         // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
         // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
         write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
+
+        if (Car1Pos.y > 0 && carsTimer % 10 == 0) {
+            Car1Pos.y--;
+        } else if (Car1Pos.y <= 0) {
+            Car1Pos.y = N_FULL_ROWS - 1;
+            Car1Pos.resetTimer = 100;
+        }
+
+        if (Car1Pos.resetTimer <= 0) {
+            write_pixel(buffer, Car1Pos.x, Car1Pos.y, 0xFF0000);
+        } else {
+            Car1Pos.resetTimer--;
+        }
+
+        carsTimer += 1;
 
         // victory zone
         for (int i = 0; i < N_FULL_ROWS; i++) {
@@ -52,7 +81,7 @@ void frogger_accept_keypress(char c)
     {
     case 'w':
     {
-        if (FrogPos.y < N_ROWS)
+        if (FrogPos.y < N_ROWS - 1)
         {
             FrogPos.y++;
         }

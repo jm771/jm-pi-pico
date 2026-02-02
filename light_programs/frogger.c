@@ -1,0 +1,78 @@
+#include "frogger.h"
+#include "hat_utils.h"
+// N.B. WS2812 protocol requires ~1.25us per bit, we have 24 bits per LED and 200 LEDs so that's 6ms per frame minimum
+// I'm not sure what'll happen if we retrigger DMA send between frames, I suspect "tearing" of some sort.
+
+typedef struct
+{
+    int32_t x;
+    int32_t y;
+} frog_pos_t;
+
+static frog_pos_t FrogPos;
+
+// void WrapPos(frog_pos_t *pos)
+// {
+// }
+
+// Run once on reboot
+void frogger_init()
+{
+    FrogPos.x = 0;
+    FrogPos.y = 0;
+}
+
+// This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)
+void frogger_produce_output(uint32_t frame, uint32_t *buffer)
+{
+    blank_buffer(buffer);
+
+    // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
+    // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
+    write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
+}
+
+// n.b. main uses `r` keypress to reset the device so this won't get forwarded
+// This gets called from an interupt - should do as little work as possible
+void frogger_accept_keypress(char c)
+{
+    switch (c)
+    {
+    case 'w':
+    {
+        FrogPos.y++;
+        if (FrogPos.y >= N_ROWS)
+        {
+            FrogPos.y -= N_ROWS;
+        }
+        break;
+    }
+    case 'a':
+    {
+        FrogPos.x--;
+        if (FrogPos.x < 0)
+        {
+            FrogPos.x += FULL_ROW_LEN;
+        }
+        break;
+    }
+    case 's':
+    {
+        FrogPos.y--;
+        if (FrogPos.y < 0)
+        {
+            FrogPos.y += N_ROWS;
+        }
+        break;
+    }
+    case 'd':
+    {
+        FrogPos.x++;
+        if (FrogPos.x >= FULL_ROW_LEN)
+        {
+            FrogPos.x -= FULL_ROW_LEN;
+        }
+        break;
+    }
+    }
+}

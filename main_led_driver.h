@@ -3,8 +3,8 @@
 
 #include <stdint.h>
 
-#define N_PROGS 7
-#define STARTING_PROGRAM 1
+#define N_PROGS 8
+#define STARTING_PROGRAM 7
 
 const char **GetProgramNames();
 

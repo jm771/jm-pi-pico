@@ -11,6 +11,7 @@
 #include "server.h"
 #include "band_controler.h"
 #include "pico/cyw43_arch.h"
+#include "frogger.h"
 #include "pwm.h"
 // #include "pico/status_led.h"
 
@@ -26,6 +27,10 @@ void tud_cdc_rx_cb(uint8_t itf)
         if (c == 'r')
         {
             letsReset = true;
+        }
+        else
+        {
+            frogger_accept_keypress(c);
         }
     }
 }
@@ -44,6 +49,7 @@ void main_init()
     init_joystick();
     tusb_init();
     main_led_init();
+    frogger_init();
 }
 
 int main()

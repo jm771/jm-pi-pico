@@ -19,7 +19,7 @@ typedef struct
     int32_t resetTimer;
 } car_pos_t;
 
-static int32_t carsTimer = 0;
+static bool hasLost = false;
 
 static frog_pos_t FrogPos;
 static car_pos_t Car1Pos;
@@ -39,10 +39,25 @@ void frogger_init()
     Car1Pos.x = 2;
     Car1Pos.y = N_FULL_ROWS - 1;
     Car1Pos.resetTimer = 0;
+    hasLost = false;
+    hasWon = false;
 }
 
-void car_logic(car_pos_t *car, uint32_t frame, uint32_t *buffer)
+void set_hat_full_color(uint32_t* buffer, uint32_t color)
 {
+    blank_buffer(buffer);
+    for (int i = 0; i < FULL_ROW_LEN; i++)
+        for (int j = 0; j < N_ROWS; j++)
+            write_pixel(buffer, i, j, color);
+}
+
+void car_logic(car_pos_t *car, frog_pos_t* frog, uint32_t frame, uint32_t *buffer)
+{
+    if (car->x == frog->x && car->y == frog->y && car->resetTimer == 0) {
+        hasLost = true;
+        return;
+    }
+    
     if (car->resetTimer >= 0)
     {
         car->resetTimer--;
@@ -71,24 +86,33 @@ void car_logic(car_pos_t *car, uint32_t frame, uint32_t *buffer)
 // This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)
 void frogger_produce_output(uint32_t frame, uint32_t *buffer)
 {
+    if (hasLost) {
+        set_hat_full_color(buffer, 0xFF0000);
+        return;
+    }
+    
     blank_buffer(buffer);
 
     if (hasWon)
     {
-        memset(buffer, 0xFF, sizeof(uint32_t) * N_LEDS);
+        set_hat_full_color(buffer, 0x00FF00);
     }
     else
     {
-        car_logic(&Car1Pos, frame, buffer);
+        car_logic(&Car1Pos, &FrogPos, frame, buffer);
 
-        // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
-        // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
-        write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
+        if (hasLost) {
+            set_hat_full_color(buffer, 0xFF0000);
+        } else {
+            // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
+            // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
+            write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
 
-        // victory zone
-        for (int i = 0; i < N_FULL_ROWS; i++)
-        {
-            write_pixel(buffer, FULL_ROW_LEN - 1, i, 0x00FF00);
+            // victory zone
+            for (int i = 0; i < N_FULL_ROWS; i++)
+            {
+                write_pixel(buffer, FULL_ROW_LEN - 1, i, 0x00FF00);
+            }
         }
     }
 }

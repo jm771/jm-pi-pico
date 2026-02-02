@@ -1,5 +1,7 @@
 #include "frogger.h"
 #include "hat_utils.h"
+#include "pico/types.h"
+#include "string.h"
 // N.B. WS2812 protocol requires ~1.25us per bit, we have 24 bits per LED and 200 LEDs so that's 6ms per frame minimum
 // I'm not sure what'll happen if we retrigger DMA send between frames, I suspect "tearing" of some sort.
 
@@ -10,6 +12,7 @@ typedef struct
 } frog_pos_t;
 
 static frog_pos_t FrogPos;
+static bool hasWon;
 
 // void WrapPos(frog_pos_t *pos)
 // {
@@ -27,9 +30,18 @@ void frogger_produce_output(uint32_t frame, uint32_t *buffer)
 {
     blank_buffer(buffer);
 
-    // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
-    // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
-    write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
+    if (hasWon) {
+        memset(buffer, 0x00FF00, sizeof(uint32_t) * N_LEDS);
+    } else {
+        // This API lets you "write" on a 21x10 grid - and for higher rows interpolates to find the nearest actual LED
+        // So our current frog controls are argubally bad (on higher rows left / right won't actually cause movement)
+        write_pixel(buffer, FrogPos.x, FrogPos.y, 0x00FF00);
+
+        // victory zone
+        for (int i = 0; i < N_FULL_ROWS; i++) {
+            write_pixel(buffer, FULL_ROW_LEN - 1, i, 0x00FF00);
+        }
+    }
 }
 
 // n.b. main uses `r` keypress to reset the device so this won't get forwarded
@@ -49,28 +61,27 @@ void frogger_accept_keypress(char c)
     }
     case 'a':
     {
-        FrogPos.x--;
-        if (FrogPos.x < 0)
+        if (FrogPos.x > 0)
         {
-            FrogPos.x += FULL_ROW_LEN;
+            FrogPos.x--;
         }
         break;
     }
     case 's':
     {
-        FrogPos.y--;
-        if (FrogPos.y < 0)
+        
+        if (FrogPos.y > 0)
         {
-            FrogPos.y += N_ROWS;
+            FrogPos.y--;
         }
         break;
     }
     case 'd':
     {
         FrogPos.x++;
-        if (FrogPos.x >= FULL_ROW_LEN)
+        if (FrogPos.x >= FULL_ROW_LEN - 1)
         {
-            FrogPos.x -= FULL_ROW_LEN;
+            hasWon = true;
         }
         break;
     }

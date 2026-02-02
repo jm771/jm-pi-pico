@@ -1,9 +1,12 @@
 #include "pico/types.h"
 
+#define N_LEVELS 2
+
 typedef struct
 {
     bool hasLost;
     bool hasWon;
+    uint32_t level;
     uint32_t gameEndFrame;
 } game_state_t;
 

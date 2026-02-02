@@ -26,9 +26,11 @@ typedef struct
 {
     int32_t x;
     int32_t orientation;
+    bool enabled;
 } gate_t;
 
-static game_state_t GameState;
+// TODO something less hacky to ensure current level starts at zero
+static game_state_t GameState = {0};
 static frog_pos_t FrogPos;
 
 #define NUM_CARS 8
@@ -39,7 +41,7 @@ static frog_pos_t FrogPos;
 #define DEAD_COLOR 0xFF0000
 #define FROG_SPRITE_X 11
 #define FROG_SPRITE_Y 7
-#define GATE_INTERVAL 4
+#define GATE_INTERVAL 5
 
 static car_pos_t car_positions[NUM_CARS];
 static gate_t gates[NUM_GATES];
@@ -58,22 +60,23 @@ void frogger_init()
         car_positions[i].y = N_FULL_ROWS - 1;
         car_positions[i].resetTimer = 0;
     }
-    car_positions[0].moveOnFrame = 10;
+    car_positions[0].moveOnFrame = 20;
     for (int i = 1; i < NUM_CARS; i++)
     {
         int increment = rand() % 3;
         if (i % 2 == 0)
         {
-            car_positions[i].moveOnFrame = 18 - increment;
+            car_positions[i].moveOnFrame = 36 - increment;
         }
         else
         {
-            car_positions[i].moveOnFrame = 5 + increment;
+            car_positions[i].moveOnFrame = 10 + increment;
         }
     }
 
     for (int i = 0; i < NUM_GATES; i++)
     {
+        gates[i].enabled = GameState.level > 0;
         gates[i].x = i * 2 + 1;
         gates[i].orientation = (i % 2) * 2 - 1;
     }
@@ -184,7 +187,12 @@ void car_logic(car_pos_t *car, frog_pos_t *frog, uint32_t frame, uint32_t *buffe
 
 void gate_logic(gate_t *gate, frog_pos_t *frog, uint32_t frame, uint32_t *buffer)
 {
-    uint32_t downFrame = frame / 16;
+    if (!gate->enabled)
+    {
+        return;
+    }
+
+    uint32_t downFrame = frame / 64;
     int32_t gateY = ((downFrame * gate->orientation) + GATE_INTERVAL) % GATE_INTERVAL;
 
     if (frog->x == gate->x)

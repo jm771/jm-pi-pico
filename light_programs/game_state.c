@@ -9,12 +9,14 @@ void game_state_init(game_state_t *gameState)
 void triggerLoss(game_state_t *gameState, uint32_t frame)
 {
     gameState->hasLost = true;
+    gameState->level = 0;
     gameState->gameEndFrame = frame;
 }
 
 void triggerWin(game_state_t *gameState, uint32_t frame)
 {
     gameState->hasWon = true;
+    gameState->level = (gameState->level + 1) % N_LEVELS;
     gameState->gameEndFrame = frame;
 }
 

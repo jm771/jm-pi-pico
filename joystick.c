@@ -35,13 +35,5 @@ void joystick_poll(dir_event_handler_t dir_event_handler)
 		dir_event_handler(new_directions);
 	}
 
-	// for (size_t i = 0; i < N_JOYSTICK_DIRS; i++)
-	// {
-	// 	if (new_directions & 1 << i)
-	// 	{
-	// 		dir_event_handler(1 << i);
-	// 	}
-	// }
-
 	LastState = currentDir;
 }

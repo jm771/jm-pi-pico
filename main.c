@@ -42,8 +42,24 @@ void tud_cdc_rx_cb(uint8_t itf)
     }
 }
 
-void handle_joystick_events()
+void handle_joystick_events(dir_t joystick_pos)
 {
+    if (joystick_pos & UP)
+    {
+        frogger_accept_keypress('w');
+    }
+    if (joystick_pos & DOWN)
+    {
+        frogger_accept_keypress('s');
+    }
+    if (joystick_pos & LEFT)
+    {
+        frogger_accept_keypress('a');
+    }
+    if (joystick_pos & RIGHT)
+    {
+        frogger_accept_keypress('d');
+    }
 }
 
 static uint32_t selectedProgram = STARTING_PROGRAM;
@@ -87,6 +103,7 @@ int main()
 
         if (currTime > nextFrameTime)
         {
+            joystick_poll(&handle_joystick_events);
             // dotstar_test();
             main_led_poll(frame, selectedProgram);
             set_onboard_led(led);

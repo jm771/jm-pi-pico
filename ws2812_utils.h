@@ -25,6 +25,14 @@ static inline uint32_t adjustBrightness(uint32_t val, size_t shift)
     return val >> shift & mask;
 }
 
+// emperically - this wants bgr0 order... which I cannot find any justification for
+static inline uint32_t toWs2812Format(uint32_t pixel_rgb, size_t brightnessShift)
+{
+    return (((pixel_rgb & 0xFF) >> 0 >> brightnessShift) << (16 + 8)) |
+           (((pixel_rgb & 0xFF00) >> 8 >> brightnessShift) << (8 + 8)) |
+           (((pixel_rgb & 0xFF0000) >> 16 >> brightnessShift) << (0 + 8));
+}
+
 void set_chain(PIO pio, uint8_t sm, uint32_t *colors, size_t l);
 
 #endif

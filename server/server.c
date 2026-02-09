@@ -64,7 +64,7 @@ static int handle_post_request(const char *request, char *result, size_t max_res
     char const *sep_point = strstr(request, BODY_SEPARATOR);
     if (sep_point)
     {
-        char const *body = sep_point + sizeof(BODY_SEPARATOR);
+        char const *body = sep_point + sizeof(BODY_SEPARATOR) - 1;
         printf("handling this body\n%s\n\n", body);
         frogger_accept_keypress(*body);
     }

@@ -8,7 +8,7 @@
 
 #define INDEX_BODY_START "<html><body><h1>Hello from Hat</h1><p>Selected program is %s</p><a href=\"/frogger.html\">Frogger Link</a>"
 #define INDEX_BODY_END "</body><link rel=\"stylesheet\" href=\"styles.css\"></html>"
-#define BUTTON_STRING "<p><"
+#define BUTTON_STRING "<p><a href=\"?%s=%lu\">%s</a></p>"
 #define BAND_STRING "<p><a href=\"?%s=%lu\">%s</a></p>"
 #ifdef WIFI_SUPPORTED
 static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_LENGTH);

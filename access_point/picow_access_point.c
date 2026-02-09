@@ -82,43 +82,67 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
         // Copy the request into the buffer
         pbuf_copy_partial(p, con_state->headers, p->tot_len > sizeof(con_state->headers) - 1 ? sizeof(con_state->headers) - 1 : p->tot_len, 0);
 
+        printf("Everything!\n%s\n\n", con_state->headers);
+
         // Handle GET request
-        if (strncmp(HTTP_GET, con_state->headers, sizeof(HTTP_GET) - 1) == 0)
+        if (strncmp(HTTP_GET, con_state->headers, sizeof(HTTP_GET) - 1) == 0 || strncmp("POST", con_state->headers, sizeof("POST") - 1) == 0)
         {
-            char *request = con_state->headers + sizeof(HTTP_GET); // + space
-            char *params = strchr(request, '?');
-            if (params)
+            if (strncmp(HTTP_GET, con_state->headers, sizeof(HTTP_GET) - 1) == 0)
             {
-                if (*params)
+                char *request = con_state->headers + sizeof(HTTP_GET); // + space
+                char *params = strchr(request, '?');
+                if (params)
                 {
-                    char *space = strchr(request, ' ');
-                    *params++ = 0;
-                    if (space)
+                    if (*params)
                     {
-                        *space = 0;
+                        char *space = strchr(request, ' ');
+                        *params++ = 0;
+                        if (space)
+                        {
+                            *space = 0;
+                        }
+                    }
+                    else
+                    {
+                        params = NULL;
+                    }
+                }
+
+                // Generate content
+                con_state->result_len = con_state->parent->get_response_handler(request, params, con_state->result, sizeof(con_state->result));
+                DEBUG_printf("Request: %s?%s\n", request, params);
+                DEBUG_printf("Result: %d\n", con_state->result_len);
+
+                // Check we had enough buffer space
+                if (con_state->result_len > (int)sizeof(con_state->result) - 1)
+                {
+                    DEBUG_printf("Too much result data %d\n", con_state->result_len);
+                    return tcp_close_client_connection(con_state, pcb, ERR_CLSD);
+                }
+
+                // Generate web page
+                if (con_state->result_len > 0)
+                {
+                    con_state->header_len = snprintf(con_state->headers, sizeof(con_state->headers), HTTP_RESPONSE_HEADERS,
+                                                     200, con_state->result_len);
+                    if (con_state->header_len > (int)sizeof(con_state->headers) - 1)
+                    {
+                        DEBUG_printf("Too much header data %d\n", con_state->header_len);
+                        return tcp_close_client_connection(con_state, pcb, ERR_CLSD);
                     }
                 }
                 else
                 {
-                    params = NULL;
+                    // Send redirect
+                    con_state->header_len = snprintf(con_state->headers, sizeof(con_state->headers), HTTP_RESPONSE_REDIRECT,
+                                                     ipaddr_ntoa(con_state->gw));
+                    DEBUG_printf("Sending redirect %s", con_state->headers);
                 }
             }
-
-            // Generate content
-            con_state->result_len = con_state->parent->http_response_handler(request, params, con_state->result, sizeof(con_state->result));
-            DEBUG_printf("Request: %s?%s\n", request, params);
-            DEBUG_printf("Result: %d\n", con_state->result_len);
-
-            // Check we had enough buffer space
-            if (con_state->result_len > (int)sizeof(con_state->result) - 1)
+            else
             {
-                DEBUG_printf("Too much result data %d\n", con_state->result_len);
-                return tcp_close_client_connection(con_state, pcb, ERR_CLSD);
-            }
+                con_state->result_len = con_state->parent->post_response_handler(con_state->headers, con_state->result, sizeof(con_state->result));
 
-            // Generate web page
-            if (con_state->result_len > 0)
-            {
                 con_state->header_len = snprintf(con_state->headers, sizeof(con_state->headers), HTTP_RESPONSE_HEADERS,
                                                  200, con_state->result_len);
                 if (con_state->header_len > (int)sizeof(con_state->headers) - 1)
@@ -126,13 +150,6 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
                     DEBUG_printf("Too much header data %d\n", con_state->header_len);
                     return tcp_close_client_connection(con_state, pcb, ERR_CLSD);
                 }
-            }
-            else
-            {
-                // Send redirect
-                con_state->header_len = snprintf(con_state->headers, sizeof(con_state->headers), HTTP_RESPONSE_REDIRECT,
-                                                 ipaddr_ntoa(con_state->gw));
-                DEBUG_printf("Sending redirect %s", con_state->headers);
             }
 
             // Send the headers to the client

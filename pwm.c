@@ -55,6 +55,6 @@ void pwm_set_level(uint sm, uint32_t level)
     uint32_t adj_level = ((level + 1) << 8) - 1;
     uint32_t dimmed_level = adj_level >> 2;
     uint32_t flipped_level = PWM_PERIOD - dimmed_level;
-    printf("sm %u level %lu\n", sm, flipped_level);
+    // printf("sm %u level %lu\n", sm, flipped_level);
     pio_pwm_set_level(pio, sm, flipped_level);
 }

@@ -5,12 +5,14 @@
 
 #include <stddef.h>
 #include "frogger_page.h"
+#include "frogger.h"
 #include "css.h"
 #include "index_page.h"
 #include <band_controler.h>
 
 #ifdef WIFI_SUPPORTED
 static int handle_server_request(const char *request, const char *params, char *result, size_t max_result_len);
+static int handle_post_request(const char *request, char *result, size_t max_result_len);
 #endif
 
 int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
@@ -21,7 +23,8 @@ int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
     cyw43_arch_init();
 
     static TCP_SERVER_T server; // state = calloc(1, sizeof(TCP_SERVER_T));
-    server.http_response_handler = handle_server_request;
+    server.get_response_handler = handle_server_request;
+    server.post_response_handler = handle_post_request;
     TCP_SERVER_T *state = &server;
 
     const char *ap_name = "wifi-hatspot";
@@ -51,6 +54,22 @@ int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
 }
 
 #ifdef WIFI_SUPPORTED
+
+#define BODY_SEPARATOR "\r\n"
+
+static int handle_post_request(const char *request, char *result, size_t max_result_len)
+{
+    printf("handling this request:\n%s\n\n", request);
+
+    char const *sep_point = strstr(request, BODY_SEPARATOR);
+    if (sep_point)
+    {
+        char const *body = sep_point + sizeof(BODY_SEPARATOR);
+        printf("handling this body\n%s\n\n", body);
+        frogger_accept_keypress(*body);
+    }
+    return 0;
+}
 
 static int handle_server_request(const char *request, const char *params, char *result, size_t max_result_len)
 {

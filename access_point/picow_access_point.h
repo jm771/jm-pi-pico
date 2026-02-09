@@ -13,19 +13,23 @@
 
 #define DEBUG_printf printf
 
+typedef int (*http_get_response_handler_t)(const char *, const char *, char *, size_t);
+typedef int (*http_post_response_handler_t)(const char *, char *, size_t);
+
 typedef struct TCP_SERVER_T_
 {
     struct tcp_pcb *server_pcb;
     ip_addr_t gw;
     // todo - tyepdef:
-    int (*http_response_handler)(const char *, const char *, char *, size_t);
+    http_get_response_handler_t get_response_handler;
+    http_post_response_handler_t post_response_handler;
 } TCP_SERVER_T;
 
 typedef struct TCP_CONNECT_STATE_T_
 {
     struct tcp_pcb *pcb;
     int sent_len;
-    char headers[128];
+    char headers[2048];
     char result[MAX_RESPONSE_LENGTH];
     int header_len;
     int result_len;

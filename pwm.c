@@ -11,6 +11,8 @@
 #include "pwm.pio.h"
 #include "pwm.h"
 
+#define PWM_PERIOD ((1u << 16) - 1)
+
 // Write `period` to the input shift register
 void pio_pwm_set_period(PIO pio, uint sm, uint32_t period)
 {
@@ -41,14 +43,18 @@ uint pwm_init(uint pin)
 {
     uint sm = pio_claim_unused_sm(pio, true);
     pwm_program_init(pio, sm, offset, pin);
-    pio_pwm_set_period(pio, sm, (1u << 16) - 1);
+    pio_pwm_set_period(pio, sm, PWM_PERIOD);
 
     return sm;
 }
 
 void pwm_set_level(uint sm, uint32_t level)
 {
-    // printf("%lu\n", level);
+
     // pio_pwm_set_level(pio, sm, (1u << 16) - 1);
-    pio_pwm_set_level(pio, sm, level << 6);
+    uint32_t adj_level = ((level + 1) << 8) - 1;
+    uint32_t dimmed_level = adj_level >> 2;
+    uint32_t flipped_level = PWM_PERIOD - dimmed_level;
+    printf("sm %u level %lu\n", sm, flipped_level);
+    pio_pwm_set_level(pio, sm, flipped_level);
 }

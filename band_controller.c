@@ -17,7 +17,8 @@ void band_controller_init(band_settings_t *settings)
 
     redSm = pwm_init(20);
     greenSm = pwm_init(21);
-    blueSm = pwm_init(19);
+    // blueSm = pwm_init(19);
+    blueSm = pwm_init(17);
 
     settings->blue = 0;
     settings->red = 0;

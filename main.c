@@ -108,8 +108,8 @@ int main()
             main_led_poll(frame, selectedProgram);
             set_onboard_led(led);
             bandSettings.red = (bandSettings.red + 1) % 256;
-            bandSettings.green = 255 - bandSettings.green;
-            bandSettings.blue = 255; // bandSettings.red;
+            bandSettings.green = 255 - bandSettings.red;
+            bandSettings.blue = bandSettings.red;
             band_controller_poll(&bandSettings);
 
             led = !led;

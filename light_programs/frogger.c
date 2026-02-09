@@ -182,7 +182,7 @@ void car_logic(car_pos_t *car, frog_pos_t *frog, uint32_t frame, uint32_t *buffe
         }
     }
 
-    printf("%li %li\n", car->y, car->resetTimer);
+    // printf("%li %li\n", car->y, car->resetTimer);
 }
 
 void gate_logic(gate_t *gate, frog_pos_t *frog, uint32_t frame, uint32_t *buffer)

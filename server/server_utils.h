@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static inline void format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
+__attribute__((format(printf, 3, 4))) static inline void format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
 {
     va_list argptr;
     va_start(argptr, format);

@@ -55,7 +55,7 @@ int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
 
 #ifdef WIFI_SUPPORTED
 
-#define BODY_SEPARATOR "\r\n"
+#define BODY_SEPARATOR "\r\n\r\n"
 
 static int handle_post_request(const char *request, char *result, size_t max_result_len)
 {

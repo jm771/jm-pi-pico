@@ -1,3 +1,8 @@
+#include "css.h"
+#include "accesspoint_defines.h"
+#include "stdio.h"
+#include <assert.h>
+
 #define BG_PRIMARY "#1e1e1e"
 #define TEXT_PRIMARY
 #define ACCENT_BLUE "#4fc3f7"
@@ -13,7 +18,7 @@ static const char THE_CSS[] = "body{font-family:Segoe UI;background-color:" BG_P
 
 static_assert(sizeof(THE_CSS) < MAX_RESPONSE_LENGTH);
 
-static int serve_css(const char *params, char *result, size_t max_result_len)
+int serve_css(const char *params, char *result, size_t max_result_len)
 {
     (void)params;
     return snprintf(result, max_result_len, THE_CSS);

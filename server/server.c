@@ -7,6 +7,7 @@
 #include "frogger_page.h"
 #include "css.h"
 #include "index_page.h"
+#include <band_controler.h>
 
 #ifdef WIFI_SUPPORTED
 static int handle_server_request(const char *request, const char *params, char *result, size_t max_result_len);
@@ -14,9 +15,8 @@ static int handle_server_request(const char *request, const char *params, char *
 
 int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
 {
-    selectedProgram = selectedProgramRef;
-    bandSettings = bandSettingsRef;
 #ifdef WIFI_SUPPORTED
+    index_page_init(selectedProgramRef, bandSettingsRef);
 
     cyw43_arch_init();
 
@@ -51,21 +51,6 @@ int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
 }
 
 #ifdef WIFI_SUPPORTED
-void format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
-{
-    va_list argptr;
-    va_start(argptr, format);
-    int result = vsnprintf(*outArray_p, *max_result_len_p, format, argptr);
-    va_end(argptr);
-
-    if (result > (int)*max_result_len_p)
-    {
-        result = (int)*max_result_len_p;
-    }
-
-    *max_result_len_p -= result;
-    *outArray_p += result;
-}
 
 static int handle_server_request(const char *request, const char *params, char *result, size_t max_result_len)
 {

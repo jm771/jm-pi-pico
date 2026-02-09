@@ -9,9 +9,9 @@
 
 #include "dhcpserver.h"
 #include "dnsserver.h"
+#include "accesspoint_defines.h"
 
 #define DEBUG_printf printf
-#define MAX_RESPONSE_LENGTH 4096
 
 typedef struct TCP_SERVER_T_
 {

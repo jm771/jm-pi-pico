@@ -2,6 +2,9 @@
 #include <stdint.h>
 #include "main_led_driver.h"
 #include "band_controler.h"
+#include "accesspoint_defines.h"
+#include <assert.h>
+#include "server_utils.h"
 
 #define INDEX_BODY_START "<html><body><h1>Hello from Hat</h1><p>Selected program is %s</p>"
 #define INDEX_BODY_END "</body><link rel=\"stylesheet\" href=\"styles.css\"></html>"
@@ -19,6 +22,12 @@ static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_L
 
 static uint32_t *selectedProgram;
 static band_settings_t *bandSettings;
+
+void index_page_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
+{
+    selectedProgram = selectedProgramRef;
+    bandSettings = bandSettingsRef;
+}
 
 int serve_test_server_content(const char *params, char *result, size_t max_result_len)
 {

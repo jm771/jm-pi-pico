@@ -1,5 +1,6 @@
 #include "frogger.h"
 #include "frogger_page.h"
+#include "stdio.h"
 
 #define FROGGER_CONTENT "<html><body>Frogger!</body></html>"
 

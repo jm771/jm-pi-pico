@@ -28,8 +28,6 @@ static void handle_post_request(const char *request, TCP_RESPONSE_T *result)
 
 static void handle_server_request(const char *request, const char *params, TCP_RESPONSE_T *result)
 {
-    write_success_header(result);
-
     if (strncmp(request, INDEX_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
     {
         return serve_index_content(params, result);
@@ -45,7 +43,10 @@ static void handle_server_request(const char *request, const char *params, TCP_R
     else
     {
         write_redirect_header(result, "index.html");
+        return;
     }
+
+    write_success_header(result);
 }
 #endif
 

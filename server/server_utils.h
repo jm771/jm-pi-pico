@@ -5,20 +5,21 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-__attribute__((format(printf, 3, 4))) static inline void format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
+#define MAX_RESPONSE_LENGTH 4096
+
+typedef struct
 {
-    va_list argptr;
-    va_start(argptr, format);
-    int result = vsnprintf(*outArray_p, *max_result_len_p, format, argptr);
-    va_end(argptr);
+    char headers[1024];
+    char result[MAX_RESPONSE_LENGTH];
+    int header_len;
+    int result_len;
+} TCP_RESPONSE_T;
 
-    if (result > (int)*max_result_len_p)
-    {
-        result = (int)*max_result_len_p;
-    }
+void reset_content(TCP_RESPONSE_T *response);
 
-    *max_result_len_p -= result;
-    *outArray_p += result;
-}
+__attribute__((format(printf, 2, 3))) void append_to_response(TCP_RESPONSE_T *response, char const *format, ...);
+
+void write_success_header(TCP_RESPONSE_T *con_state);
+void write_redirect_header(TCP_RESPONSE_T *con_state, char const *relpath);
 
 #endif

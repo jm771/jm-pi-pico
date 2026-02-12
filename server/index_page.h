@@ -3,8 +3,9 @@
 
 #include "stddef.h"
 #include "band_controler.h"
+#include "server_utils.h"
 
 #define INDEX_ENDPOINT "/index.html"
-int serve_test_server_content(const char *params, char *result, size_t max_result_len);
+void serve_index_content(const char *params, TCP_RESPONSE_T *result);
 void index_page_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef);
 #endif

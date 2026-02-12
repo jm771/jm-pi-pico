@@ -11,8 +11,42 @@
 #include <band_controler.h>
 
 #ifdef WIFI_SUPPORTED
-static int handle_server_request(const char *request, const char *params, char *result, size_t max_result_len);
-static int handle_post_request(const char *request, char *result, size_t max_result_len);
+#define BODY_SEPARATOR "\r\n\r\n"
+
+static void handle_post_request(const char *request, TCP_RESPONSE_T *result)
+{
+    char const *sep_point = strstr(request, BODY_SEPARATOR);
+    if (sep_point)
+    {
+        char const *body = sep_point + sizeof(BODY_SEPARATOR) - 1;
+        printf("handling this body\n%s\n\n", body);
+        frogger_accept_keypress(*body);
+    }
+
+    write_success_header(result);
+}
+
+static void handle_server_request(const char *request, const char *params, TCP_RESPONSE_T *result)
+{
+    write_success_header(result);
+
+    if (strncmp(request, INDEX_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
+    {
+        return serve_index_content(params, result);
+    }
+    else if (strncmp(request, "/" FROGGER_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
+    {
+        return serve_frogger_content(params, result);
+    }
+    else if (strncmp(request, STYLES_ENDPOINT, sizeof(STYLES_ENDPOINT) - 1) == 0)
+    {
+        return serve_css(params, result);
+    }
+    else
+    {
+        write_redirect_header(result, "index.html");
+    }
+}
 #endif
 
 int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
@@ -52,46 +86,6 @@ int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)
 #endif
     return 0;
 }
-
-#ifdef WIFI_SUPPORTED
-
-#define BODY_SEPARATOR "\r\n\r\n"
-
-static int handle_post_request(const char *request, char *result, size_t max_result_len)
-{
-    printf("handling this request:\n%s\n\n", request);
-
-    char const *sep_point = strstr(request, BODY_SEPARATOR);
-    if (sep_point)
-    {
-        char const *body = sep_point + sizeof(BODY_SEPARATOR) - 1;
-        printf("handling this body\n%s\n\n", body);
-        frogger_accept_keypress(*body);
-    }
-    return 0;
-}
-
-static int handle_server_request(const char *request, const char *params, char *result, size_t max_result_len)
-{
-
-    if (strncmp(request, INDEX_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
-    {
-        return serve_test_server_content(params, result, max_result_len);
-    }
-    if (strncmp(request, FROGGER_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
-    {
-        return serve_frogger_content(params, result, max_result_len);
-    }
-
-    if (strncmp(request, STYLES_ENDPOINT, sizeof(STYLES_ENDPOINT) - 1) == 0)
-    {
-        return serve_css(params, result, max_result_len);
-    }
-
-    return 0;
-}
-
-#endif
 
 void server_poll()
 {

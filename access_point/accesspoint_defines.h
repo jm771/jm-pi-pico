@@ -1,3 +1,1 @@
 
-
-#define MAX_RESPONSE_LENGTH 16384

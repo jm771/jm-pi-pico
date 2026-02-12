@@ -20,7 +20,7 @@ FILE(GLOB c_code_src *.c server/*.c light_programs/*.c)
 
  if(PICO_CYW43_SUPPORTED)
 	FILE(GLOB server_src  access_point/*.c  access_point/dhcpserver/*.c
-access_point/dnsserver/*.c)
+access_point/dnsserver/*.c server/*.c)
  else()
 	set(server_src )
  endif()

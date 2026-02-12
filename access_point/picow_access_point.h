@@ -10,11 +10,12 @@
 #include "dhcpserver.h"
 #include "dnsserver.h"
 #include "accesspoint_defines.h"
+#include "server_utils.h"
 
 #define DEBUG_printf printf
 
-typedef int (*http_get_response_handler_t)(const char *, const char *, char *, size_t);
-typedef int (*http_post_response_handler_t)(const char *, char *, size_t);
+typedef void (*http_get_response_handler_t)(const char *, const char *, TCP_RESPONSE_T *);
+typedef void (*http_post_response_handler_t)(const char *, TCP_RESPONSE_T *);
 
 typedef struct TCP_SERVER_T_
 {
@@ -29,12 +30,10 @@ typedef struct TCP_CONNECT_STATE_T_
 {
     struct tcp_pcb *pcb;
     int sent_len;
-    char headers[2048];
-    char result[MAX_RESPONSE_LENGTH];
-    int header_len;
-    int result_len;
+    char http_request[1024];
     ip_addr_t *gw;
     TCP_SERVER_T *parent;
+    TCP_RESPONSE_T result;
 } TCP_CONNECT_STATE_T;
 
 bool tcp_server_open(TCP_SERVER_T *state, const char *ap_name);

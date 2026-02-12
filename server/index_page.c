@@ -5,8 +5,9 @@
 #include "accesspoint_defines.h"
 #include <assert.h>
 #include "server_utils.h"
+#include "frogger_page.h"
 
-#define INDEX_BODY_START "<html><body><h1>Hello from Hat</h1><p>Selected program is %s</p><a href=\"/frogger.html\">Frogger Link</a>"
+#define INDEX_BODY_START "<html><body><h1>Hello from Hat</h1><p>Selected program is %s</p>"
 #define INDEX_BODY_END "</body><link rel=\"stylesheet\" href=\"styles.css\"></html>"
 #define BUTTON_STRING "<p><a href=\"?led=%u\">%s</a></p>"
 #define BAND_STRING "<p><a href=\"?%s=%u\">%s</a></p>"
@@ -29,14 +30,21 @@ void index_page_init(uint32_t *selectedProgramRef, band_settings_t *bandSettings
     bandSettings = bandSettingsRef;
 }
 
-int serve_test_server_content(const char *params, char *result, size_t max_result_len)
+void serve_index_content(const char *params, TCP_RESPONSE_T *result)
 {
     // See if the user changed it
     if (params)
     {
         // TODO - could assert only one match
-        sscanf(params, LED_PARAM, selectedProgram);
-        // printf("selects %lu", *selectedProgram);
+        if (sscanf(params, LED_PARAM, selectedProgram) != EOF)
+        {
+            if (*selectedProgram == FROGGER_PROGRAM)
+            {
+                write_redirect_header(result, FROGGER_ENDPOINT);
+                return;
+            }
+        }
+
         uint32_t redParam;
         if (sscanf(params, RED_BAND_PARAM, &redParam) == 1)
         {
@@ -45,24 +53,20 @@ int serve_test_server_content(const char *params, char *result, size_t max_resul
         printf("red %hhu\n", bandSettings->red);
     }
 
-    char const *startResult = result;
-
-    format_to_buffer(&result, &max_result_len, INDEX_BODY_START, GetProgramNames()[*selectedProgram]);
+    append_to_response(result, INDEX_BODY_START, GetProgramNames()[*selectedProgram]);
 
     for (size_t i = 0; i < N_PROGS; i++)
     {
-        format_to_buffer(&result, &max_result_len, BUTTON_STRING, i, GetProgramNames()[i]);
+        append_to_response(result, BUTTON_STRING, i, GetProgramNames()[i]);
     }
 
-    format_to_buffer(&result, &max_result_len, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
+    append_to_response(result, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
 
-    format_to_buffer(&result, &max_result_len, INDEX_BODY_END);
+    append_to_response(result, INDEX_BODY_END);
 
-    format_to_buffer(&result, &max_result_len, FORM_BEGIN);
-    format_to_buffer(&result, &max_result_len, FORM_RED);
-    format_to_buffer(&result, &max_result_len, FORM_END);
+    append_to_response(result, FORM_BEGIN);
+    append_to_response(result, FORM_RED);
+    append_to_response(result, FORM_END);
 
     (void)bandSettings;
-
-    return result - startResult;
 }

@@ -60,13 +60,13 @@ void serve_index_content(const char *params, TCP_RESPONSE_T *result)
         append_to_response(result, BUTTON_STRING, i, GetProgramNames()[i]);
     }
 
-    append_to_response(result, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
+    // append_to_response(result, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
 
     append_to_response(result, INDEX_BODY_END);
 
-    append_to_response(result, FORM_BEGIN);
-    append_to_response(result, FORM_RED);
-    append_to_response(result, FORM_END);
+    // append_to_response(result, FORM_BEGIN);
+    // append_to_response(result, FORM_RED);
+    // append_to_response(result, FORM_END);
 
     (void)bandSettings;
 }

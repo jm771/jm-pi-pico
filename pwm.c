@@ -43,6 +43,7 @@ uint pwm_init(uint pin)
 {
     uint sm = pio_claim_unused_sm(pio, true);
     pwm_program_init(pio, sm, offset, pin);
+    pio_pwm_set_level(pio, sm, PWM_PERIOD);
     pio_pwm_set_period(pio, sm, PWM_PERIOD);
 
     return sm;
@@ -52,9 +53,8 @@ void pwm_set_level(uint sm, uint32_t level)
 {
 
     // pio_pwm_set_level(pio, sm, (1u << 16) - 1);
-    uint32_t adj_level = ((level + 1) << 8) - 1;
-    uint32_t dimmed_level = adj_level >> 2;
-    uint32_t flipped_level = PWM_PERIOD - dimmed_level;
+
+    uint32_t flipped_level = PWM_PERIOD - level;
     // printf("sm %u level %lu\n", sm, flipped_level);
     pio_pwm_set_level(pio, sm, flipped_level);
 }

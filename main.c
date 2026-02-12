@@ -107,9 +107,23 @@ int main()
             // dotstar_test();
             main_led_poll(frame, selectedProgram);
             set_onboard_led(led);
-            bandSettings.red = (bandSettings.red + 1) % 256;
+
+            static int direction = 1;
+
+            bandSettings.red += direction;
+            if (bandSettings.red == 255)
+            {
+                direction = -1;
+            }
+            else if (bandSettings.red == 0)
+            {
+                direction = 1;
+            }
+
             bandSettings.green = 255 - bandSettings.red;
+
             bandSettings.blue = bandSettings.red;
+            bandSettings.pink = bandSettings.green;
             band_controller_poll(&bandSettings);
 
             led = !led;

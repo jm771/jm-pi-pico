@@ -5,40 +5,33 @@
 static uint redSm;
 static uint greenSm;
 static uint blueSm;
+static uint pinkSm;
 
 void band_controller_init(band_settings_t *settings)
 {
-    // gpio_init(19);
-    // gpio_set_dir(19, GPIO_OUT);
-    // gpio_init(20);
-    // gpio_set_dir(20, GPIO_OUT);
-    // gpio_init(21);
-    // gpio_set_dir(21, GPIO_OUT);
+    //
 
-    redSm = pwm_init(20);
-    greenSm = pwm_init(21);
-    // blueSm = pwm_init(19);
-    blueSm = pwm_init(17);
+    redSm = pwm_init(19);
+    greenSm = pwm_init(20);
+    blueSm = pwm_init(21);
+    pinkSm = pwm_init(17);
 
     settings->blue = 0;
     settings->red = 0;
     settings->green = 0;
 }
 
+uint32_t adjust_level(uint8_t base, uint32_t dimness)
+{
+    uint32_t adj_level = ((((uint32_t)base) + 1) << 8) - 1;
+    uint32_t dimmed_level = adj_level >> dimness;
+    return dimmed_level;
+}
+
 void band_controller_poll(band_settings_t const *settings)
 {
-
-    pwm_set_level(redSm, settings->red);
-    pwm_set_level(greenSm, settings->green);
-    pwm_set_level(blueSm, settings->blue);
-    // gpio_put(20, 1);
-
-    // if (settings->red)
-    // {
-    //     gpio_put(20, 1); // Red - working
-    // }
-    // else
-    // {
-    //     gpio_put(20, 0); // Red - working
-    // }
+    pwm_set_level(redSm, adjust_level(settings->red, 0));
+    pwm_set_level(greenSm, adjust_level(settings->green, 5));
+    pwm_set_level(blueSm, adjust_level(settings->blue, 2));
+    pwm_set_level(pinkSm, adjust_level(settings->pink, 2));
 }

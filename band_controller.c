@@ -32,5 +32,5 @@ void band_controller_poll(band_settings_t const *settings)
     pwm_set_level(redSm, adjust_level(settings->red, 0));
     pwm_set_level(greenSm, adjust_level(settings->green, 3));
     pwm_set_level(blueSm, adjust_level(settings->blue, 2));
-    pwm_set_level(pinkSm, adjust_level(settings->pink, 3));
+    pwm_set_level(pinkSm, adjust_level(settings->pink, 4));
 }

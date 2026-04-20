@@ -9,10 +9,13 @@
 
 .program pwm
 .side_set 1 opt
-
-    pull noblock    side 0 ; Pull from FIFO to OSR if available, else copy X to OSR.
+    pull noblock           ; Pull from FIFO to OSR if available, else copy X to OSR.
     mov x, osr             ; Copy most-recently-pulled value back to scratch X
     mov y, isr             ; ISR contains PWM period. Y used as counter.
+    jmp x!=y setpin        ; Allow for 100% pwm
+    jmp countloop
+setpin:
+    nop side 0
 countloop:
     jmp x!=y noset         ; Set pin high if X == Y, keep the two paths length matched
     jmp skip        side 1

@@ -55,6 +55,6 @@ void pwm_set_level(uint sm, uint32_t level)
     // pio_pwm_set_level(pio, sm, (1u << 16) - 1);
 
     uint32_t flipped_level = PWM_PERIOD - level;
-    // printf("sm %u level %lu\n", sm, flipped_level);
+    printf("sm %u level %lu (pre flip %lu)\n", sm, flipped_level, level);
     pio_pwm_set_level(pio, sm, flipped_level);
 }

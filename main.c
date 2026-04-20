@@ -121,10 +121,10 @@ int main()
             }
 
 
-            bandSettings.green = 0; //255 - bandSettings.red;
+            bandSettings.green = 255 - bandSettings.red;
 
-            bandSettings.blue = 0; //bandSettings.red;
-            bandSettings.pink = 0; //bandSettings.green;
+            bandSettings.blue = bandSettings.red;
+            bandSettings.pink = bandSettings.green;
             band_controller_poll(&bandSettings);
 
             led = !led;

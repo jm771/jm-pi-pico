@@ -1,7 +1,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include "picow_access_point.h"
+
+#include "server_utils.h"
 
 #define HTTP_RESPONSE_HEADERS "HTTP/1.1 %d OK\nContent-Length: %d\nContent-Type: text/html; charset=utf-8\nConnection: close\n\n"
 #define HTTP_RESPONSE_REDIRECT "HTTP/1.1 302 Redirect\nLocation: http://%s/%s\n\n"
@@ -50,12 +51,14 @@ void write_success_header(TCP_RESPONSE_T *con_state)
                                      200, con_state->result_len);
 }
 
-void write_redirect_header(TCP_RESPONSE_T *con_state, char const *relpath)
+void write_redirect_header(TCP_RESPONSE_T *con_state, int ipAddr, char const *relpath)
 {
-    ip4_addr_t gw;
-    gw.addr = PP_HTONL(CYW43_DEFAULT_IP_AP_ADDRESS);
+    // ip4_addr_t gw;
+    // gw.addr = PP_HTONL(CYW43_DEFAULT_IP_AP_ADDRESS);
+    // ipaddr_ntoa(&gw)
+
     con_state->header_len = snprintf(con_state->headers, sizeof(con_state->headers), HTTP_RESPONSE_REDIRECT,
-                                     ipaddr_ntoa(&gw), relpath);
+                                     ipAddr, relpath);
     DEBUG_printf("Sending redirect %s", con_state->headers);
 }
 

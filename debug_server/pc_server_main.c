@@ -97,9 +97,13 @@ int main()
                 else
                 {
                     printf("Got this http request\n%s", HttpRequestBuffer);
-                    handle_http_request(HttpRequestBuffer, &response, handle_server_request, handle_post_request)
-
-                    send(clientSocket, NOT_FOUND_RESPONSE, sizeof(NOT_FOUND_RESPONSE), 0);
+                    handle_http_request(HttpRequestBuffer, &response, handle_server_request, handle_post_request);
+                    
+                    send(clientSocket, response.headers, response.header_len, 0);
+                    if (response.result_len)
+                    {
+                        send(clientSocket, response.result, response.result_len, 0);
+                    }
                 }
             }
         }

@@ -14,14 +14,10 @@
 
 #define DEBUG_printf printf
 
-typedef void (*http_get_response_handler_t)(const char *, const char *, TCP_RESPONSE_T *);
-typedef void (*http_post_response_handler_t)(const char *, TCP_RESPONSE_T *);
-
 typedef struct TCP_SERVER_T_
 {
     struct tcp_pcb *server_pcb;
     ip_addr_t gw;
-    // todo - tyepdef:
     http_get_response_handler_t get_response_handler;
     http_post_response_handler_t post_response_handler;
 } TCP_SERVER_T;

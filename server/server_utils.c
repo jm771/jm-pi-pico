@@ -58,3 +58,44 @@ void write_redirect_header(TCP_RESPONSE_T *con_state, char const *relpath)
                                      ipaddr_ntoa(&gw), relpath);
     DEBUG_printf("Sending redirect %s", con_state->headers);
 }
+
+void handle_http_request(char * http_request, TCP_RESPONSE_T * result, http_get_response_handler_t get_response_handler,
+    http_post_response_handler_t post_response_handler)
+{  
+        reset_content(result);
+
+        // Handle GET request
+        if (strncmp(HTTP_GET, http_request, sizeof(HTTP_GET) - 1) == 0)
+        {
+            char *request = http_request + sizeof(HTTP_GET); // + space
+            char *params = strchr(request, '?');
+            if (params)
+            {
+                if (*params)
+                {
+                    char *space = strchr(request, ' ');
+                    *params++ = 0;
+                    if (space)
+                    {
+                        *space = 0;
+                    }
+                }
+                else
+                {
+                    params = NULL;
+                }
+            }
+
+            // Generate content
+            get_response_handler(request, params, result);
+        }
+        else if (strncmp("POST", http_request, sizeof("POST") - 1) == 0)
+        {
+            post_response_handler(http_request, result);
+        }
+        else
+        {
+            write_redirect_header(result, "index.html");
+        }
+
+}

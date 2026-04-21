@@ -10,7 +10,6 @@
 
 #define TCP_PORT 80
 #define POLL_TIME_S 5
-#define HTTP_GET "GET"
 
 static err_t tcp_close_client_connection(TCP_CONNECT_STATE_T *con_state, struct tcp_pcb *client_pcb, err_t close_err)
 {
@@ -82,43 +81,9 @@ err_t tcp_server_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
         pbuf_copy_partial(p, con_state->http_request, p->tot_len > sizeof(con_state->http_request) - 1 ? sizeof(con_state->http_request) - 1 : p->tot_len, 0);
 
         printf("Full HTTP request!\n%s\n\n", con_state->http_request);
+        TCP_RESPONSE_T *result = &con_state->result; 
 
-        reset_content(&con_state->result);
-        // Handle GET request
-        if (strncmp(HTTP_GET, con_state->http_request, sizeof(HTTP_GET) - 1) == 0)
-        {
-            char *request = con_state->http_request + sizeof(HTTP_GET); // + space
-            char *params = strchr(request, '?');
-            if (params)
-            {
-                if (*params)
-                {
-                    char *space = strchr(request, ' ');
-                    *params++ = 0;
-                    if (space)
-                    {
-                        *space = 0;
-                    }
-                }
-                else
-                {
-                    params = NULL;
-                }
-            }
-
-            // Generate content
-            con_state->parent->get_response_handler(request, params, &con_state->result);
-        }
-        else if (strncmp("POST", con_state->http_request, sizeof("POST") - 1) == 0)
-        {
-            con_state->parent->post_response_handler(con_state->http_request, &con_state->result);
-        }
-        else
-        {
-            write_redirect_header(&con_state->result, "index.html");
-        }
-
-        TCP_RESPONSE_T *result = &con_state->result;
+        handle_http_request(con_state->http_request, result, con_state->parent->get_response_handler, con_state->parent->post_response_handler);
 
         DEBUG_printf("Result len: %d\n", con_state->result.result_len);
 

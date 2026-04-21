@@ -7,3 +7,5 @@ cmake_install.cmake
 compile_commands.json
 generated/
 pico-sdk/
+debug_server/server
+pico_flash_region.ld

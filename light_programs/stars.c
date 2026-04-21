@@ -8,7 +8,7 @@
 #define PERIOD 100
 // #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
-void stars_produce_output(unsigned int frame, uint32_t *buffer)
+void stars_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     static uint32_t colour = 0;
     static uint32_t seed = 0;

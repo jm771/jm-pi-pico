@@ -74,4 +74,3 @@ pico_configure_ip4_address(${project_name} PRIVATE
 
 # create map/bin/hex/uf2 file in addition to ELF.
 pico_add_extra_outputs(${project_name})
-

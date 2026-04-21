@@ -47,34 +47,41 @@ void main_led_blank()
     dma_send_buffer(MainLedChannel, MainLedBuffer, N_LEDS * sizeof(uint32_t));
 }
 
-void run_selected_program(uint32_t frame, uint32_t program_number, uint32_t *buffer)
+void run_selected_program(uint32_t frame, uint32_t program_number, uint32_t *buffer, band_settings_t* band)
 {
+    static uint32_t lastProgramNumber;
+    if (lastProgramNumber != program_number)
+    {
+
+        lastProgramNumber = program_number;
+    }
+
     switch (program_number)
     {
     case 0:
-        return spinning_rainbow_produce_output(frame, buffer);
+        return spinning_rainbow_produce_output(frame, buffer, band);
     case 1:
-        return stars_produce_output(frame, buffer);
+        return stars_produce_output(frame, buffer, band);
     case 2:
-        return pixels_produce_output(frame, buffer);
+        return pixels_produce_output(frame, buffer, band);
     case 3:
-        return mama_lauda_produce_output(frame, buffer);
+        return mama_lauda_produce_output(frame, buffer, band);
     case 4:
-        return gradient_flow_produce_output(frame, buffer);
+        return gradient_flow_produce_output(frame, buffer, band);
     case 5:
-        return bouncing_ring_produce_output(frame, buffer);
+        return bouncing_ring_produce_output(frame, buffer, band);
     case 6:
-        return tempus_fulvum_produce_output(frame, buffer);
+        return tempus_fulvum_produce_output(frame, buffer, band);
     case 7:
-        return frogger_produce_output(frame, buffer);
+        return frogger_produce_output(frame, buffer, band);
     }
 }
 
-void main_led_poll(uint32_t frame, uint32_t program_number)
+void main_led_poll(uint32_t frame, uint32_t program_number, band_settings_t* band)
 {
     static uint32_t LedDrawBuffer[N_LEDS];
 
-    run_selected_program(frame, program_number, MainLedBuffer);
+    run_selected_program(frame, program_number, MainLedBuffer, band);
 
     for (int i = 0; i < N_LEDS; i++)
     {

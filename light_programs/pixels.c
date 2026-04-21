@@ -4,7 +4,7 @@
 // static const uint32_t colorPallette[] = {0xFF585E, 0xFFCA3a, 0x8AC936, 0x1982C4, 0x6A4C93, 0x5432FF, 0xFF8A14, 0x00BBFF};
 static const uint32_t colorPallette[] = {0xFF0000, 0xFF8800, 0xFF0088, 0x00FF00, 0x88FF00, 0x00FF88, 0x0000FF, 0x8800FF, 0x0088FF};
 
-void pixels_produce_output(unsigned int frame, uint32_t *buffer)
+void pixels_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     if (frame % 50 != 0)
     {

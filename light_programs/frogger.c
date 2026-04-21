@@ -208,7 +208,7 @@ void gate_logic(gate_t *gate, frog_pos_t *frog, uint32_t frame, uint32_t *buffer
     }
 }
 
-bool handleLossVictory(uint32_t frame, uint32_t *buffer)
+bool handleLossVictory(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     if (!GameState.hasWon && FrogPos.x >= FULL_ROW_LEN - 1)
     {
@@ -237,12 +237,12 @@ bool handleLossVictory(uint32_t frame, uint32_t *buffer)
 }
 
 // This is the "render" call currently called every 20ms in main (20ms > 6ms so should be fine) (nextFrameTime = currTime + 20 * 1000;)
-void frogger_produce_output(uint32_t frame, uint32_t *buffer)
+void frogger_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     srand(42);
     blank_buffer(buffer);
 
-    if (!handleLossVictory(frame, buffer))
+    if (!handleLossVictory(frame, buffer, band))
     {
         for (int i = 0; i < NUM_CARS; i++)
         {

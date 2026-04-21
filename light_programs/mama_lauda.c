@@ -5,7 +5,7 @@
 #define MARGIN 1
 #define PRETEND_WIDTH (ROW_WIDTH - 3)
 
-// void mama_lauda_produce_output(unsigned int frame, uint32_t *buffer)
+// void mama_lauda_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 // {
 //     (void)frame;
 //     blank_buffer(buffer);
@@ -66,7 +66,7 @@ void write_string(unsigned int frame, char const *string, uint32_t *buffer)
     }
 }
 
-void mama_lauda_produce_output(unsigned int frame, uint32_t *buffer)
+void mama_lauda_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     // (void)frame;
     blank_buffer(buffer);

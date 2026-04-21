@@ -105,32 +105,14 @@ int main()
         {
             joystick_poll(&handle_joystick_events);
             // dotstar_test();
-            main_led_poll(frame, selectedProgram);
+            main_led_poll(frame, selectedProgram, &bandSettings);
             set_onboard_led(led);
-
-            static int direction = 1;
-
-            bandSettings.red += direction;
-            if (bandSettings.red == 255)
-            {
-                direction = -1;
-            }
-            else if (bandSettings.red == 0)
-            {
-                direction = 1;
-            }
-
-
-            bandSettings.green = 255 - bandSettings.red;
-
-            bandSettings.blue = bandSettings.red;
-            bandSettings.pink = bandSettings.green;
             band_controller_poll(&bandSettings);
 
             led = !led;
             frame++;
 
-            nextFrameTime = currTime + 20 * 1000;
+            nextFrameTime = currTime + 20 * 1000; 
 
             // printf("Processed in %llu\n", get_absolute_time() - currTime);
         }

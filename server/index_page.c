@@ -18,7 +18,8 @@ static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_L
 #define RED_BAND_PARAM "red=%lu"
 #define LED_GPIO 0
 #define FORM_BEGIN "<form action=\"/submit\" method=\"get\">"
-#define FORM_RED "<label>Red:<input type=\"range\" name=\"gain\" min=\"0\" max=\"10\" value=\"5\"></label><output></output>"
+#define FORM_BAND_BRIGHTNESS "<label>Band Brightness:<input type=\"range\" name=\"gain\" min=\"0\" max=\"16\" value=\"%u\"></label><output></output>"
+#define FROM_BAND_ON "<label>Band on<input type=\"checkbox\" checked=\"true\">"
 #define FORM_END "<br><br><button>Submit</button></form>"
 
 static uint32_t *selectedProgram;
@@ -64,9 +65,10 @@ void serve_index_content(const char *params, TCP_RESPONSE_T *result)
 
     append_to_response(result, INDEX_BODY_END);
 
-    // append_to_response(result, FORM_BEGIN);
-    // append_to_response(result, FORM_RED);
-    // append_to_response(result, FORM_END);
+    append_to_response(result, FORM_BEGIN);
+    append_to_response(result, FORM_BAND_BRIGHTNESS, bandSettings->brightness);
+    append_to_response(result, FROM_BAND_ON);
+    append_to_response(result, FORM_END);
 
     (void)bandSettings;
 }

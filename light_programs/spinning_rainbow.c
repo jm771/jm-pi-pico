@@ -2,7 +2,7 @@
 #include "hat_utils.h"
 #include "string.h"
 
-void spinning_rainbow_produce_output(unsigned int frame, uint32_t *buffer)
+void spinning_rainbow_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     if (frame % 4 != 0)
     {

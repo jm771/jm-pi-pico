@@ -49,7 +49,7 @@ void render(uint32_t epoc, uint32_t *buffer)
     disc(buffer, 0, 3, hour * 30, phase, false);
 }
 
-void tempus_fulvum_produce_output(uint32_t frame, uint32_t *buffer)
+void tempus_fulvum_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* band)
 {
     // Time is hard...
     uint32_t epoc = (uint32_t)get_absolute_time() / 1000 / 1000;

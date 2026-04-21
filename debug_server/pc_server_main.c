@@ -13,19 +13,23 @@
 
 #include "server_utils.h"
 
+#define WIFI_SUPPORTED
+
+#include "server.h"
+
 #define PORT 1337
 #define MAX_CONNECTIONS 4
 #define REQUEST_BUFFER_SIZE 1024
-#define RESPONSE_BUFFER_SIZE 4096
 #define NOT_FOUND_RESPONSE  "HTTP/1.1 404 Not Found\r\n\n"
 
-static TCP_SER
+
 
 int main()
 {
     static int connections[MAX_CONNECTIONS];
     static char HttpRequestBuffer[REQUEST_BUFFER_SIZE];
-    static char HttpResponseBuffer[RESPONSE_BUFFER_SIZE];
+    static TCP_RESPONSE_T response;
+   
     for (int i = 0; i < MAX_CONNECTIONS; i++)
     {
         connections[i] = -1;
@@ -93,6 +97,8 @@ int main()
                 else
                 {
                     printf("Got this http request\n%s", HttpRequestBuffer);
+                    handle_http_request(HttpRequestBuffer, &response, handle_server_request, handle_post_request)
+
                     send(clientSocket, NOT_FOUND_RESPONSE, sizeof(NOT_FOUND_RESPONSE), 0);
                 }
             }

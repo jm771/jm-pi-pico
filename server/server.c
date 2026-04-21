@@ -13,7 +13,7 @@
 #ifdef WIFI_SUPPORTED
 #define BODY_SEPARATOR "\r\n\r\n"
 
-static void handle_post_request(const char *request, TCP_RESPONSE_T *result)
+void handle_post_request(const char *request, TCP_RESPONSE_T *result)
 {
     char const *sep_point = strstr(request, BODY_SEPARATOR);
     if (sep_point)
@@ -26,7 +26,7 @@ static void handle_post_request(const char *request, TCP_RESPONSE_T *result)
     write_success_header(result);
 }
 
-static void handle_server_request(const char *request, const char *params, TCP_RESPONSE_T *result)
+void handle_server_request(const char *request, const char *params, TCP_RESPONSE_T *result)
 {
     if (strncmp(request, INDEX_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
     {

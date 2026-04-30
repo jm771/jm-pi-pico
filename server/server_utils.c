@@ -3,6 +3,9 @@
 #include <stdarg.h>
 
 #include "server_utils.h"
+#include "index_page.h"
+#include "frogger_page.h"
+#include "css.h"
 
 #define HTTP_RESPONSE_HEADERS "HTTP/1.1 %d OK\nContent-Length: %d\nContent-Type: text/html; charset=utf-8\nConnection: close\n\n"
 #define HTTP_RESPONSE_REDIRECT "HTTP/1.1 302 Redirect\nLocation: http://%s/%s\n\n"
@@ -51,15 +54,21 @@ void write_success_header(TCP_RESPONSE_T *con_state)
                                      200, con_state->result_len);
 }
 
-void write_redirect_header(TCP_RESPONSE_T *con_state, int ipAddr, char const *relpath)
+void write_redirect_header(TCP_RESPONSE_T *con_state,  char const *relpath)
 {
     // ip4_addr_t gw;
     // gw.addr = PP_HTONL(CYW43_DEFAULT_IP_AP_ADDRESS);
     // ipaddr_ntoa(&gw)
 
+    #ifdef DEBUG_SERVER
+    static const char * IP_ADDR = "localhost:1337";
+    #else
+    static const char * IP_ADDR = "192.168.4.1";
+    #endif
+
     con_state->header_len = snprintf(con_state->headers, sizeof(con_state->headers), HTTP_RESPONSE_REDIRECT,
-                                     ipAddr, relpath);
-    DEBUG_printf("Sending redirect %s", con_state->headers);
+                                    IP_ADDR, relpath);
+    printf("Sending redirect %s", con_state->headers);
 }
 
 void handle_http_request(char * http_request, TCP_RESPONSE_T * result, http_get_response_handler_t get_response_handler,
@@ -71,7 +80,9 @@ void handle_http_request(char * http_request, TCP_RESPONSE_T * result, http_get_
         if (strncmp(HTTP_GET, http_request, sizeof(HTTP_GET) - 1) == 0)
         {
             char *request = http_request + sizeof(HTTP_GET); // + space
-            char *params = strchr(request, '?');
+            char *eol = strchr(request, '\n');
+            char *params = memchr(request, '?', eol-request);
+
             if (params)
             {
                 if (*params)
@@ -98,7 +109,48 @@ void handle_http_request(char * http_request, TCP_RESPONSE_T * result, http_get_
         }
         else
         {
+            //TODO
             write_redirect_header(result, "index.html");
         }
 
+}
+
+#define BODY_SEPARATOR "\r\n\r\n"
+
+void handle_post_request(const char *request, TCP_RESPONSE_T *result)
+{
+    char const *sep_point = strstr(request, BODY_SEPARATOR);
+    if (sep_point)
+    {
+        char const *body = sep_point + sizeof(BODY_SEPARATOR) - 1;
+        printf("handling this body\n%s\n\n", body);
+        #ifndef DEBUG_SERVER
+        frogger_accept_keypress(*body);
+        #endif
+    }
+
+    write_success_header(result);
+}
+
+void handle_server_request(const char *request, const char *params, TCP_RESPONSE_T *result)
+{
+    if (strncmp(request, INDEX_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
+    {
+        serve_index_content(params, result);
+    }
+    else if (strncmp(request, "/" FROGGER_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
+    {
+        serve_frogger_content(params, result);
+    }
+    else if (strncmp(request, STYLES_ENDPOINT, sizeof(STYLES_ENDPOINT) - 1) == 0)
+    {
+        serve_css(params, result);
+    }
+    else
+    {
+        write_redirect_header(result, "index.html");
+        return;
+    }
+
+    write_success_header(result);
 }

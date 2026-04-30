@@ -11,11 +11,14 @@
 #include <stdbool.h>
 #include <fcntl.h>
 
-#include "server_utils.h"
 
 #define WIFI_SUPPORTED
 
+#include "server_utils.h"
+
+
 #include "server.h"
+#include "index_page.h"
 
 #define PORT 1337
 #define MAX_CONNECTIONS 4
@@ -23,9 +26,23 @@
 #define NOT_FOUND_RESPONSE  "HTTP/1.1 404 Not Found\r\n\n"
 
 
+//TODO - don't duplicate
+static const char *ProgramNames[] = {"Spinning Rainbow", "Stars", "Blocks", "Text", "Gradient", "Bouncing Ring", "Tempus Fulvum", "Frogger"};
+
+const char **GetProgramNames()
+{
+    return ProgramNames;
+}
+
+
+static uint32_t selectedProgram = 1;
+static band_settings_t bandSettings;
+
 
 int main()
 {
+    index_page_init(&selectedProgram, &bandSettings);
+
     static int connections[MAX_CONNECTIONS];
     static char HttpRequestBuffer[REQUEST_BUFFER_SIZE];
     static TCP_RESPONSE_T response;

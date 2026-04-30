@@ -12,3 +12,5 @@ target_include_directories(server PRIVATE
 		 ${CMAKE_CURRENT_LIST_DIR}/../server
 		  ${CMAKE_CURRENT_LIST_DIR}/../light_programs
 )
+
+target_compile_options(server PRIVATE -DDEBUG_SERVER -g)

@@ -11,43 +11,7 @@
 #include <band_controler.h>
 
 #ifdef WIFI_SUPPORTED
-#define BODY_SEPARATOR "\r\n\r\n"
 
-void handle_post_request(const char *request, TCP_RESPONSE_T *result)
-{
-    char const *sep_point = strstr(request, BODY_SEPARATOR);
-    if (sep_point)
-    {
-        char const *body = sep_point + sizeof(BODY_SEPARATOR) - 1;
-        printf("handling this body\n%s\n\n", body);
-        frogger_accept_keypress(*body);
-    }
-
-    write_success_header(result);
-}
-
-void handle_server_request(const char *request, const char *params, TCP_RESPONSE_T *result)
-{
-    if (strncmp(request, INDEX_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
-    {
-        return serve_index_content(params, result);
-    }
-    else if (strncmp(request, "/" FROGGER_ENDPOINT, sizeof(INDEX_ENDPOINT) - 1) == 0)
-    {
-        return serve_frogger_content(params, result);
-    }
-    else if (strncmp(request, STYLES_ENDPOINT, sizeof(STYLES_ENDPOINT) - 1) == 0)
-    {
-        return serve_css(params, result);
-    }
-    else
-    {
-        write_redirect_header(result, "index.html");
-        return;
-    }
-
-    write_success_header(result);
-}
 #endif
 
 int server_init(uint32_t *selectedProgramRef, band_settings_t *bandSettingsRef)

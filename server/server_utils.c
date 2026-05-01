@@ -7,6 +7,10 @@
 #include "frogger_page.h"
 #include "css.h"
 
+#ifndef DEBUG_SERVER
+#include "frogger.h"
+#endif
+
 #define HTTP_RESPONSE_HEADERS "HTTP/1.1 %d OK\nContent-Length: %d\nContent-Type: text/html; charset=utf-8\nConnection: close\n\n"
 #define HTTP_RESPONSE_REDIRECT "HTTP/1.1 302 Redirect\nLocation: http://%s/%s\n\n"
 
@@ -124,9 +128,19 @@ void handle_post_request(const char *request, TCP_RESPONSE_T *result)
     {
         char const *body = sep_point + sizeof(BODY_SEPARATOR) - 1;
         printf("handling this body\n%s\n\n", body);
-        #ifndef DEBUG_SERVER
-        frogger_accept_keypress(*body);
-        #endif
+
+        if (strstr(request, "POST /frogger.html"))
+        {
+            #ifndef DEBUG_SERVER
+            frogger_accept_keypress(*body);
+            #endif
+        }
+        else if (strstr(request, "POST /band"))
+        {
+            bool on = (strcmp(body, "true") == 0);
+            set_band_enabled(on);
+            printf("setting %i\n", on);
+        }
     }
 
     write_success_header(result);

@@ -24,6 +24,8 @@ void stars_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* ban
         int32_t dist_from_min = abs((int32_t)(frame % PERIOD) - RAMP_TIME);
         int32_t scale_down = MAX(RAMP_TIME - dist_from_min, 0);
 
+        snap_color(band, colour, 255 >> (scale_down / 2));
+
         srand(seed);
         for (size_t i = VALID_LED_START; i < N_LEDS; i++)
         {

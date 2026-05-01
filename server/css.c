@@ -9,6 +9,8 @@
 #define ACCENT_BLUE "#4fc3f7"
 static const char THE_CSS[] = "body{font-family:Segoe UI;background-color:" BG_PRIMARY ";color:#d4d4d4;font-size:24px}"
                               "a{background-color:" ACCENT_BLUE ";border:none;border-radius:8px;color:" BG_PRIMARY ";"
+                              "padding: 12px 24px;}"
+                              "button{background-color:" ACCENT_BLUE ";border:none;border-radius:8px;color:" BG_PRIMARY ";"
                               "padding: 12px 24px;}";
 //;
 // font-size : 16px;

@@ -17,10 +17,18 @@ static_assert(sizeof(INDEX_BODY_START) + sizeof(INDEX_BODY_END) < MAX_RESPONSE_L
 #define LED_PARAM "led=%lu"
 #define RED_BAND_PARAM "red=%lu"
 #define LED_GPIO 0
-#define FORM_BEGIN "<form action=\"/submit\" method=\"get\">"
-#define FORM_BAND_BRIGHTNESS "<label>Band Brightness:<input type=\"range\" name=\"gain\" min=\"0\" max=\"16\" value=\"%u\"></label><output></output>"
-#define FROM_BAND_ON "<label>Band on<input type=\"checkbox\" checked=\"true\">"
-#define FORM_END "<br><br><button>Submit</button></form>"
+// #define FROM_BAND_ON "<label>Band on<input type=\"checkbox\" checked=\"true\">"
+#define BAND_BUTTON "<br><br><button id=bandBtn>%s</button></form>"
+#define SCRIPT \
+"<script>"                \
+"let state = %s;" \
+"let btn = document.getElementById(\"bandBtn\");" \
+    "btn.onclick = function() {" \
+    "state = !state;" \
+    "btn.textContent = state ? 'ON' : 'OFF';" \
+    "fetch(\"/band\", { method: \"POST\", body: state, });" \
+    "};"  \
+"</script>" 
 
 static uint32_t *selectedProgram;
 static band_settings_t *bandSettings;
@@ -29,6 +37,11 @@ void index_page_init(uint32_t *selectedProgramRef, band_settings_t *bandSettings
 {
     selectedProgram = selectedProgramRef;
     bandSettings = bandSettingsRef;
+}
+
+void set_band_enabled(bool enabled)
+{
+    bandSettings->enabled = enabled;
 }
 
 void serve_index_content(const char *params, TCP_RESPONSE_T *result)
@@ -63,12 +76,15 @@ void serve_index_content(const char *params, TCP_RESPONSE_T *result)
 
     // append_to_response(result, BAND_STRING, "red", !(bandSettings->red), bandSettings->red ? "red off" : "red on");
 
-    append_to_response(result, INDEX_BODY_END);
+    append_to_response(result, BAND_BUTTON, bandSettings->enabled ? "ON" : "OFF");
+    char const * start_state = bandSettings->enabled ? "true" : "false";
+    append_to_response(result, SCRIPT, start_state);
+    // append_to_response(result, FORM_BEGIN);
+    // append_to_response(result, FORM_BAND_BRIGHTNESS, bandSettings->brightness);
+    // append_to_response(result, FROM_BAND_ON);
+    // append_to_response(result, FORM_END);
 
-    append_to_response(result, FORM_BEGIN);
-    append_to_response(result, FORM_BAND_BRIGHTNESS, bandSettings->brightness);
-    append_to_response(result, FROM_BAND_ON);
-    append_to_response(result, FORM_END);
+        append_to_response(result, INDEX_BODY_END);
 
     (void)bandSettings;
 }

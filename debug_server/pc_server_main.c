@@ -121,6 +121,8 @@ int main()
                     {
                         send(clientSocket, response.result, response.result_len, 0);
                     }
+
+                    memset(HttpRequestBuffer, 0, REQUEST_BUFFER_SIZE);
                 }
             }
         }

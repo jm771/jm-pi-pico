@@ -18,5 +18,8 @@ typedef struct
 void band_controller_init(band_settings_t *);
 void band_controller_poll(band_settings_t const *);
 void set_color(band_settings_t * settings, uint8_t colorNo, uint8_t level);
+void set_rgb(band_settings_t * settings, uint32_t color);
+void snap_color(band_settings_t * settings, uint32_t color, uint8_t intensity);
+
 
 #endif

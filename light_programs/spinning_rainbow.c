@@ -15,6 +15,11 @@ void spinning_rainbow_produce_output(uint32_t frame, uint32_t *buffer, band_sett
 
     uint32_t col = frame % ROW_WIDTH;
 
+    if (col == 0)
+    {
+        set_color(band, (frame / ROW_WIDTH) % 4, 255);
+    }
+
     for (size_t i = 0; i < N_ROWS; i++)
     {
         write_pixel(buffer, col, i, 0x0022ff);

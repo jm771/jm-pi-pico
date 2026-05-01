@@ -72,10 +72,53 @@ void band_default_pattern(band_settings_t * bandSettings, uint32_t frame)
     }
 }
 
+void set_rgb(band_settings_t * band, uint32_t color)
+{
+    band->red = color >> 16;
+    band->green = (color >> 8) & 0xff;
+    band->blue = color & 0xff;
+}
+
+void snap_color(band_settings_t * settings, uint32_t color, uint8_t intensity)
+{
+    band_controler_zero(settings);
+    uint32_t red = color >> 16;
+    uint32_t green = (color >> 8) & 0xff;
+    uint32_t blue = color & 0xff;
+
+    if (red > green) {
+        if (red > blue)
+        {
+            settings->red = intensity;
+        } else {
+            settings->blue = intensity;
+        }
+
+    }
+    else {
+        if (green > blue)
+        {
+            settings->green = intensity;
+        } else {
+            settings->blue = intensity;
+        }
+    }
+}
+
 void band_controller_poll(band_settings_t const *settings)
 {
-    pwm_set_level(redSm, adjust_level(settings->red, 0, settings->brightness));
-    pwm_set_level(greenSm, adjust_level(settings->green, 3, settings->brightness));
-    pwm_set_level(blueSm, adjust_level(settings->blue, 2, settings->brightness));
-    pwm_set_level(pinkSm, adjust_level(settings->pink, 4, settings->brightness));
+    if (settings->enabled)
+    {
+        pwm_set_level(redSm, adjust_level(settings->red, 0, settings->brightness));
+        pwm_set_level(greenSm, adjust_level(settings->green, 3, settings->brightness));
+        pwm_set_level(blueSm, adjust_level(settings->blue, 2, settings->brightness));
+        pwm_set_level(pinkSm, adjust_level(settings->pink, 4, settings->brightness));
+    }
+    else
+    {
+        pwm_set_level(redSm, 0);
+        pwm_set_level(greenSm, 0);
+        pwm_set_level(blueSm, 0);
+        pwm_set_level(pinkSm, 0);
+    }
 }

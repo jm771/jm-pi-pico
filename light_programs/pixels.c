@@ -12,7 +12,7 @@ void pixels_produce_output(uint32_t frame, uint32_t *buffer, band_settings_t* ba
     }
 
     memset(buffer, 0, sizeof(uint32_t) * N_LEDS);
-    set_color(band, frame % 150, 127);
+    set_color(band, (frame / 50) % 4, 127);
 
     for (size_t i = 0; i < (ROW_WIDTH / 3); i++)
     {

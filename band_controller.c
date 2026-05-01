@@ -74,7 +74,7 @@ void band_default_pattern(band_settings_t * bandSettings, uint32_t frame)
 
 void set_rgb(band_settings_t * band, uint32_t color)
 {
-    band->red = color >> 16;
+    band->red = (color >> 16) & 0xff;
     band->green = (color >> 8) & 0xff;
     band->blue = color & 0xff;
 }
@@ -82,7 +82,7 @@ void set_rgb(band_settings_t * band, uint32_t color)
 void snap_color(band_settings_t * settings, uint32_t color, uint8_t intensity)
 {
     band_controler_zero(settings);
-    uint32_t red = color >> 16;
+    uint32_t red = (color >> 16) & 0xff;
     uint32_t green = (color >> 8) & 0xff;
     uint32_t blue = color & 0xff;
 

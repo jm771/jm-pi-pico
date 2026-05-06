@@ -11,8 +11,8 @@
 #include "frogger.h"
 #endif
 
-#define HTTP_RESPONSE_HEADERS "HTTP/1.1 %d OK\nContent-Length: %d\nContent-Type: text/html; charset=utf-8\nConnection: close\n\n"
-#define HTTP_RESPONSE_REDIRECT "HTTP/1.1 302 Redirect\nLocation: http://%s/%s\n\n"
+#define HTTP_RESPONSE_HEADERS "HTTP/1.1 %d OK\r\nContent-Length: %d\r\nContent-Type: text/html; charset=utf-8\r\nConnection: close\r\n\r\n"
+#define HTTP_RESPONSE_REDIRECT "HTTP/1.1 302 Redirect\r\nLocation: http://%s/%s\r\nContent-Length: 0\r\nConnection: close\r\n\r\n"
 
 __attribute__((format(printf, 3, 4))) static inline void
 format_to_buffer(char **outArray_p, size_t *max_result_len_p, char const *format, ...)
@@ -50,6 +50,7 @@ __attribute__((format(printf, 2, 3))) void append_to_response(TCP_RESPONSE_T *re
 void reset_content(TCP_RESPONSE_T *response)
 {
     response->result_len = 0;
+    response->header_len = 0;
 }
 
 void write_success_header(TCP_RESPONSE_T *con_state)
@@ -166,5 +167,8 @@ void handle_server_request(const char *request, const char *params, TCP_RESPONSE
         return;
     }
 
-    write_success_header(result);
+    if (result->header_len == 0)
+    {
+        write_success_header(result);
+    }
 }

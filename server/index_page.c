@@ -84,7 +84,7 @@ void serve_index_content(const char *params, TCP_RESPONSE_T *result)
     // append_to_response(result, FROM_BAND_ON);
     // append_to_response(result, FORM_END);
 
-        append_to_response(result, INDEX_BODY_END);
+    append_to_response(result, INDEX_BODY_END);
 
     (void)bandSettings;
 }
